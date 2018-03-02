@@ -26,3 +26,10 @@ EOF
 
 yum install google-chrome-stable -y --nogpgcheck
 ```
+
+## SwitchyOmega
+
+```
+https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
+```
+
