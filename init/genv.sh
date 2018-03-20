@@ -14,10 +14,10 @@ fi
 # ----------Prefix   ----------
 
 PG_PORT_PRE=84
-PG_DIR_PRE=$HOME/app
+PG_DIR_PRE=$HOME/databases
 
 MY_PORT_PRE=73
-MY_DIR_PRE=$HOME/app
+MY_DIR_PRE=$HOME/databases
 
 # ---------Postgresql---------
 
@@ -56,8 +56,8 @@ wget -S https://ftp.postgresql.org/pub/source/v10.3/postgresql-10.3.tar.gz
 ==========================================================================
 yum -y install coreutils glib2 lrzsz sysstat e4fsprogs xfsprogs ntp readline-devel zlib zlib-devel openssl openssl-devel pam-devel libxml2-devel libxslt-devel python-devel tcl-devel gcc make smartmontools flex bison perl perl-devel perl-ExtUtils* openldap openldap-devel
 ==========================================================================
-./configure --prefix=$HOME/app/pgsql8400 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-O0' --with-pgport=8400 --enable-depend;
-./configure --prefix=$HOME/app/pgsql8400 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-ggdb -Og -g3 -fno-omit-frame-pointer' --with-pgport=8400 --enable-depend;
+./configure --prefix=$PG_DIR_PRE/pgsql8400 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-O0' --with-pgport=8400 --enable-depend;
+./configure --prefix=$PG_DIR_PRE/pgsql8400 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-ggdb -Og -g3 -fno-omit-frame-pointer' --with-pgport=8400 --enable-depend;
 make -sj12;
 make install;
 ==========================================================================
@@ -94,8 +94,8 @@ mv boost_1_59_0 /usr/local/boost
 ==========================================================================
 wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.20.tar.gz
 mkdir ~/Projects/mysql-5.7.20;tar xzvf mysql-5.7.20.tar.gz -C ~/Projects/
-cmake -DCMAKE_INSTALL_PREFIX=/home/jackgo/app/mysql7300 \
--DMYSQL_DATADIR=/home/jackgo/app/data/mydata7300 \
+cmake -DCMAKE_INSTALL_PREFIX=$MY_DIR_PRE/mysql7300 \
+-DMYSQL_DATADIR=$MY_DIR_PRE/data/mydata7300 \
 -DDEFAULT_CHARSET=utf8 \
 -DDEFAULT_COLLATION=utf8_general_ci \
 -DMYSQL_TCP_PORT=7300 \
