@@ -7,6 +7,7 @@ fi
 
 if [ $1 == "alias" ] ; then
 echo "alias pp=\"source `pwd`/$0\"" >> $HOME/.bashrc 
+cat $HOME/.bashrc
 exit 1;
 fi
 
@@ -49,6 +50,9 @@ alias ll='ls -lh'
 function help_pg()
 {
 cat << EOF
+==========================================================================
+wget -S https://ftp.postgresql.org/pub/source/v9.6.8/postgresql-9.6.8.tar.gz
+wget -S https://ftp.postgresql.org/pub/source/v10.3/postgresql-10.3.tar.gz
 ==========================================================================
 yum -y install coreutils glib2 lrzsz sysstat e4fsprogs xfsprogs ntp readline-devel zlib zlib-devel openssl openssl-devel pam-devel libxml2-devel libxslt-devel python-devel tcl-devel gcc make smartmontools flex bison perl perl-devel perl-ExtUtils* openldap openldap-devel
 ==========================================================================
