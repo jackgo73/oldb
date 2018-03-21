@@ -47,7 +47,7 @@ alias ll='ls -lh'
 
 \cp $MYSQLDATA/my.cnf $HOME/.my.cnf
 
-function help_pg()
+function help_psql_init()
 {
 cat << EOF
 ==========================================================================
@@ -78,6 +78,63 @@ sed -ir "s/#*log_truncate_on_rotation.*/log_truncate_on_rotation = on/" $PGDATA/
 sed -ir "s/#*log_rotation_age.*/log_rotation_age = 0/" $PGDATA/postgresql.conf
 sed -ir "s/#*log_statement.*/log_statement= 'all'/" $PGDATA/postgresql.conf
 sed -ir "s/#*max_prepared_transactions.*/max_prepared_transactions= 800/" $PGDATA/postgresql.conf
+==========================================================================
+EOF
+}
+
+function help_psql_test()
+{
+cat << EOF
+==========================================================================
+[keep updating]
+create unlogged table test03 (id int primary key, info text);
+
+\set id random(1,100)
+insert into test03 values(:id, repeat(md5(random()::text), 1000)) on conflict on constraint test03_pkey do update set info=excluded.info;
+
+pgbench -M prepared -n -r -P 1 -f ./test.sql -c 48 -j 48 -T 10000000
+==========================================================================
+[generate 1000w random tuples]
+create table tbl(c1 int, c2 int, c3 int);
+create index idx1 on tbl(c1,c2);
+insert into tbl select mod(trunc(random()*10000)::int, 10000), trunc(random()*10000000) from generate_series(1,10000000);
+==========================================================================
+create table t1(id int, info text, crt_time timestamp);
+create table t2(id int, info text, crt_time timestamp);
+create table t3(id int, info text, crt_time timestamp);
+create table t4(id int, info text, crt_time timestamp);
+create table t5(id int, info text, crt_time timestamp);
+create table t6(id int, info text, crt_time timestamp);
+create table t7(id int, info text, crt_time timestamp);
+create table t8(id int, info text, crt_time timestamp);
+insert into t1 select generate_series(1,2000000),md5(random()::text),clock_timestamp();
+insert into t2 select generate_series(1,1500000),md5(random()::text),clock_timestamp();
+insert into t3 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
+insert into t4 select generate_series(1,3000000),md5(random()::text),clock_timestamp();
+insert into t5 select generate_series(1,4000000),md5(random()::text),clock_timestamp();
+insert into t6 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
+insert into t7 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
+insert into t8 select generate_series(1,5000000),md5(random()::text),clock_timestamp();
+==========================================================================
+EOF
+}
+
+function help_psql_rep()
+{
+cat << EOF
+==========================================================================
+[pg_dump] -- AccessShareLock
+date;pg_dump -f ./pgsql.dmp -F d -E UTF8 -j 8 -h $PGDATA -p 8400 -U postgres postgres;date
+
+postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_locks t1,pg_class t2 where t1.relation=t2.oid  and pid in (28381,28375) order by pid,relation;
+  pid  | database | relation | locktype |      mode       | granted | relname 
+-------+----------+----------+----------+-----------------+---------+---------
+ 28375 |    13323 |    16438 | relation | AccessShareLock | t       | t8
+
+postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_locks t1,pg_class t2 where t1.relation=t2.oid  and pid in (28381) order by pid,relation;
+  pid  | database | relation | locktype |      mode       | granted | relname 
+-------+----------+----------+----------+-----------------+---------+---------
+ 28375 |    13323 |    16438 | relation | AccessShareLock | t       | t8
 ==========================================================================
 EOF
 }

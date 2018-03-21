@@ -1,0 +1,40 @@
+#!/bin/bash
+# Author: Gao Mingjie (jackgo73@outlook.com)
+
+# --------------SOURCE--------------
+
+PG_PORT_PRE=84
+PG_DIR_PRE=$HOME/databases
+
+MY_PORT_PRE=73
+MY_DIR_PRE=$HOME/databases
+
+export PS1="[\u@\h \w][$1]\\$ "
+export PGPORT=$PG_PORT_PRE$1
+export PGDATA=$PG_DIR_PRE/data/pgdata$PGPORT
+export LANG=en_US.utf8
+export PGHOME=$PG_DIR_PRE/pgsql$PGPORT
+export LD_LIBRARY_PATH=$PGHOME/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
+export DATE=`date +"%Y%m%d%H%M"`
+export PATH=$PGHOME/bin:$PATH:.
+export MANPATH=$PGHOME/share/man:$MANPATH
+export PGHOST=$PGDATA
+export PGUSER=postgres
+export PGDATABASE=postgres
+
+if [[ $PATH =~ $PGHOME ]]
+then
+  echo "包含"
+else
+  echo "不包含"
+fi
+
+
+export MYSQLPORT=$MY_PORT_PRE$1
+export MYSQLHOME=$MY_DIR_PRE/mysql$MYSQLPORT
+export MYSQLDATA=$MY_DIR_PRE/data/mydata$MYSQLPORT
+
+export PATH=$PGHOME/bin:$MYSQLHOME/bin:$PATH:.
+
+alias rm='rm -i'
+alias ll='ls -lh'
