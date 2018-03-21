@@ -60,8 +60,8 @@ Examples:
   source genv 00
   genv -a ~/.bashrc
   genv -c sys
-  genv -c pgtest
-  genv -c pgrep
+  genv -c pginit
+  genv -c pgutility
 EOF
 }
 
@@ -81,8 +81,90 @@ set_alias()
 
 cheetsheet()
 {
-	# $1 is not use
-	
+# $1 is not use
+############################################################
+if [[ $2 == "sys" ]]; then
+############################################################	
+cat << EOF
+============================================================
+[GIT Config]
+git config --global user.email "jackgo73@outlook.com"
+git config --global user.name "Jack Go"
+============================================================
+[SSH]
+ssh-keygen -t rsa -b 4096 -C "jackgo73@outlook.com"
+============================================================
+[GIT Shadowsockets]
+git config --global http.proxy 'socks5://127.0.0.1:1091' 
+git config --global https.proxy 'socks5://127.0.0.1:1091'
+============================================================
+[SAMBA]
+yum install samba samba-client 
+vim /etc/samba/smb.conf
+[homes]
+  comment = Home Directories
+  browseable = Yes
+  read only = No
+  valid users = jackgo
+
+smbpasswd -a jackgo
+firewall-cmd --permanent --zone=public --add-service=samba
+firewall-cmd --reload
+#setsebool -P samba_enable_home_dirs on
+#setsebool -P samba_export_all_rw on
+setenforce 0
+vi /etc/selinux/config
+SELINUX=disabled
+# no need to "setenforce 0"
+# no need to "systemctl stop firewalld.service"
+# no need to "systemctl disable  firewalld.service
+systemctl enable smb nmb
+systemctl restart smb nmb
+============================================================
+[CORE]
+echo core.%e.%p.SIG%s.%t > /proc/sys/kernel/core_pattern
+echo 63 > /proc/self/coredump_filter # include shared memory
+ulimit -c unlimited
+============================================================
+[GDB]
+handle SIGUSR1 noprint pass
+EOF
+############################################################
+elif [[ $2 == "pginit" ]]; then
+############################################################	
+cat << EOF
+============================================================
+wget -S https://ftp.postgresql.org/pub/source/v9.6.8/postgresql-9.6.8.tar.gz
+wget -S https://ftp.postgresql.org/pub/source/v10.3/postgresql-10.3.tar.gz
+============================================================
+yum -y install coreutils glib2 lrzsz sysstat e4fsprogs xfsprogs ntp readline-devel zlib zlib-devel openssl openssl-devel pam-devel libxml2-devel libxslt-devel python-devel tcl-devel gcc make smartmontools flex bison perl perl-devel perl-ExtUtils* openldap openldap-devel
+============================================================
+./configure --prefix=$PG_DIR_PRE/pgsql$PG_PORT_PRE00 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-O0' --with-pgport=$PG_PORT_PRE00 --enable-depend;
+./configure --prefix=$PG_DIR_PRE/pgsql$PG_PORT_PRE00 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-ggdb -Og -g3 -fno-omit-frame-pointer' --with-pgport=$PG_PORT_PRE00 --enable-depend;
+make -sj12;
+make install;
+============================================================
+initdb -D $PGDATA -E UTF8 --locale=C -U postgres -X $PGDATA/pg_xlog$PGPORT
+============================================================
+sed -ir "s/#*unix_socket_directories.*/unix_socket_directories = '.'/" $PGDATA/postgresql.conf
+sed -ir "s/#*unix_socket_permissions.*/unix_socket_permissions = 0700/" $PGDATA/postgresql.conf
+sed -ir "s/#*max_connections.*/max_connections = 800/" $PGDATA/postgresql.conf
+sed -ir "s/#*superuser_reserved_connections.*/superuser_reserved_connections = 13/" $PGDATA/postgresql.conf
+sed -ir "s/#*logging_collector.*/logging_collector= on/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_directory.*/log_directory = 'pg_log'/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_filename.*/log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_rotation_size.*/log_rotation_size = 10MB/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_line_prefix.*/log_line_prefix='%p %r %u %d %t %e'/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_min_duration_statement.*/log_min_duration_statement= 1000/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_timezone.*/log_timezone = 'UTC'/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_truncate_on_rotation.*/log_truncate_on_rotation = on/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_rotation_age.*/log_rotation_age = 0/" $PGDATA/postgresql.conf
+sed -ir "s/#*log_statement.*/log_statement= 'all'/" $PGDATA/postgresql.conf
+sed -ir "s/#*max_prepared_transactions.*/max_prepared_transactions= 800/" $PGDATA/postgresql.conf
+============================================================
+EOF
+############################################################
+fi
 }
 
 while getopts "a:c:h" opt; do
@@ -114,10 +196,10 @@ if [[ $# == 0 ]]; then
 	usage
 	exit 0
 elif [[ $gflag == "cheetsheet" ]]; then
-	cheetsheet $2 || exit 1
+	cheetsheet "ph" $3 || exit 1
 	exit 0
 elif [[ $gflag == "alias" ]]; then
-	set_alias "placeholder" $2 || exit 1
+	set_alias "ph" $3 || exit 1
 	exit 0
 fi
 
