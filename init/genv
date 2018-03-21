@@ -103,7 +103,7 @@ handle SIGUSR1 noprint pass
 EOF
 ############################################################
 elif [[ $2 == "pginit" ]]; then
-############################################################	
+############################################################
 cat << EOF
 ============================================================
 wget -S https://ftp.postgresql.org/pub/source/v9.6.8/postgresql-9.6.8.tar.gz
@@ -111,8 +111,8 @@ wget -S https://ftp.postgresql.org/pub/source/v10.3/postgresql-10.3.tar.gz
 ============================================================
 yum -y install coreutils glib2 lrzsz sysstat e4fsprogs xfsprogs ntp readline-devel zlib zlib-devel openssl openssl-devel pam-devel libxml2-devel libxslt-devel python-devel tcl-devel gcc make smartmontools flex bison perl perl-devel perl-ExtUtils* openldap openldap-devel
 ============================================================
-./configure --prefix=$PG_DIR_PRE/pgsql$PG_PORT_PRE00 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-O0' --with-pgport=$PG_PORT_PRE00 --enable-depend;
-./configure --prefix=$PG_DIR_PRE/pgsql$PG_PORT_PRE00 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-ggdb -Og -g3 -fno-omit-frame-pointer' --with-pgport=$PG_PORT_PRE00 --enable-depend;
+./configure --prefix=$PG_DIR_PRE/pgsql$PG_PORT_PRE$1 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-O0' --with-pgport=$PG_PORT_PRE$1 --enable-depend;
+./configure --prefix=$PG_DIR_PRE/pgsql$PG_PORT_PRE$1 --with-openssl --enable-debug --enable-cassert --enable-thread-safety CFLAGS='-ggdb -Og -g3 -fno-omit-frame-pointer' --with-pgport=$PG_PORT_PRE$1 --enable-depend;
 make -sj12;
 make install;
 ============================================================
@@ -136,6 +136,52 @@ sed -ir "s/#*max_prepared_transactions.*/max_prepared_transactions= 800/" $PGDAT
 ============================================================
 EOF
 ############################################################
+elif [[ $2 == "pgutil" ]]; then
+############################################################
+cat << EOF
+==========================================================================
+[keep updating]
+create unlogged table test03 (id int primary key, info text);
+
+\set id random(1,100)
+insert into test03 values(:id, repeat(md5(random()::text), 1000)) on conflict on constraint test03_pkey do update set info=excluded.info;
+
+pgbench -M prepared -n -r -P 1 -f ./test.sql -c 48 -j 48 -T 10000000
+==========================================================================
+[generate 1000w random tuples]
+create table tbl(c1 int, c2 int, c3 int);
+create index idx1 on tbl(c1,c2);
+insert into tbl select mod(trunc(random()*10000)::int, 10000), trunc(random()*10000000) from generate_series(1,10000000);
+==========================================================================
+create table t1(id int, info text, crt_time timestamp);
+create table t2(id int, info text, crt_time timestamp);
+create table t3(id int, info text, crt_time timestamp);
+create table t4(id int, info text, crt_time timestamp);
+create table t5(id int, info text, crt_time timestamp);
+create table t6(id int, info text, crt_time timestamp);
+create table t7(id int, info text, crt_time timestamp);
+create table t8(id int, info text, crt_time timestamp);
+insert into t1 select generate_series(1,2000000),md5(random()::text),clock_timestamp();
+insert into t2 select generate_series(1,1500000),md5(random()::text),clock_timestamp();
+insert into t3 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
+insert into t4 select generate_series(1,3000000),md5(random()::text),clock_timestamp();
+insert into t5 select generate_series(1,4000000),md5(random()::text),clock_timestamp();
+insert into t6 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
+insert into t7 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
+insert into t8 select generate_series(1,5000000),md5(random()::text),clock_timestamp();
+==========================================================================
+date;pg_dump -f ./pgsql.dmp -F d -E UTF8 -j 8 -h $PGDATA -p 8400 -U postgres postgres;date
+postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_locks t1,pg_class t2 where t1.relation=t2.oid  and pid in (28381,28375) order by pid,relation;
+  pid  | database | relation | locktype |      mode       | granted | relname 
+-------+----------+----------+----------+-----------------+---------+---------
+ 28375 |    13323 |    16438 | relation | AccessShareLock | t       | t8
+
+postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_locks t1,pg_class t2 where t1.relation=t2.oid  and pid in (28381) order by pid,relation;
+  pid  | database | relation | locktype |      mode       | granted | relname 
+-------+----------+----------+----------+-----------------+---------+---------
+ 28375 |    13323 |    16438 | relation | AccessShareLock | t       | t8
+==========================================================================
+EOF
 fi
 }
 
@@ -217,7 +263,7 @@ else
 	if [[ $gflag == "alias" ]]; then
 		set_alias "ph" $garg
 	elif [[ $gflag == "cheetsheet" ]]; then
-		cheetsheet "ph" $garg
+		cheetsheet $sarg $garg
 	fi
 fi
 
