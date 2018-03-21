@@ -1,8 +1,9 @@
 #!/bin/bash
 # Author: Gao Mingjie (jackgo73@outlook.com)
 
-# --------------SOURCE--------------
+gflag=""
 
+# [START]SOURCE
 PG_PORT_PRE=84
 PG_DIR_PRE=$HOME/databases
 
@@ -14,19 +15,18 @@ export PGPORT=$PG_PORT_PRE$1
 export PGDATA=$PG_DIR_PRE/data/pgdata$PGPORT
 export LANG=en_US.utf8
 export PGHOME=$PG_DIR_PRE/pgsql$PGPORT
-export LD_LIBRARY_PATH=$PGHOME/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=$PGHOME/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
 export DATE=`date +"%Y%m%d%H%M"`
-export PATH=$PGHOME/bin:$PATH:.
 export MANPATH=$PGHOME/share/man:$MANPATH
 export PGHOST=$PGDATA
 export PGUSER=postgres
 export PGDATABASE=postgres
 
-if [[ $PATH =~ $PGHOME ]]
+if [[ $PATH =~ $PGHOME/bin ]]
 then
-  echo "包含"
+  :
 else
-  echo "不包含"
+  export PATH=$PGHOME/bin:$PATH
 fi
 
 
@@ -34,7 +34,95 @@ export MYSQLPORT=$MY_PORT_PRE$1
 export MYSQLHOME=$MY_DIR_PRE/mysql$MYSQLPORT
 export MYSQLDATA=$MY_DIR_PRE/data/mydata$MYSQLPORT
 
-export PATH=$PGHOME/bin:$MYSQLHOME/bin:$PATH:.
+if [[ $PATH =~ $MYSQLHOME/bin ]]
+then
+  :
+else
+  export PATH=$PGHOME/bin:$MYSQLHOME/bin:$PATH:.
+fi
+# [END]SOURCE
 
-alias rm='rm -i'
-alias ll='ls -lh'
+
+# https://github.com/alexanderepstein/Bash-Snippets/blob/master/todo/todo
+usage()
+{
+cat <<EOF
+genv
+Description: A simplistic tool for db-deployment.
+Usage: source genv [num] or genv [flags] [arguments]
+  -a  add alias to .bash* file
+  -c  Cheetsheet
+      sys    :  system installation help
+      pgtest :  pgsql test statement
+      pgrep  :  pgsql replication
+
+Examples:
+  source genv 00
+  genv -a ~/.bashrc
+  genv -c sys
+  genv -c pgtest
+  genv -c pgrep
+EOF
+}
+
+set_alias()
+{
+	# $1 is not use
+	if grep -q "genv" $2; then
+   		echo "[LOG] genv already exists in $2"
+	else
+		echo "[LOG] set alias in $2"
+   		echo "alias pp=\"source `pwd`/`basename $0`\"" >> $2
+	fi
+	echo "[LOG] grep \"genv\" in $2"
+	echo -e "[LOG] \c"
+	grep "genv" $2
+}
+
+cheetsheet()
+{
+	# $1 is not use
+	
+}
+
+while getopts "a:c:h" opt; do
+	case "$opt" in
+		\?) echo "[ERROR] Invalid option: -$OPTARG" >&2
+			exit 1
+			;;
+		h)  usage
+			exit 0
+			;;
+		a)  if [[ $gflag == "" ]]; then
+				gflag="alias"
+			else
+				echo "[ERROR] all flags are mutually exclusive"
+				exit 1
+			fi
+			;;
+		c)  if [[ $gflag == "" ]]; then
+				gflag="cheetsheet"
+			else
+				echo "[ERROR] all flags are mutually exclusive"
+				exit 1
+			fi
+			;;
+	esac
+done
+
+if [[ $# == 0 ]]; then
+	usage
+	exit 0
+elif [[ $gflag == "cheetsheet" ]]; then
+	cheetsheet $2 || exit 1
+	exit 0
+elif [[ $gflag == "alias" ]]; then
+	set_alias "placeholder" $2 || exit 1
+	exit 0
+fi
+
+
+
+
+
+
