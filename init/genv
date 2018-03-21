@@ -1,49 +1,21 @@
 #!/bin/bash
 # Author: Gao Mingjie (jackgo73@outlook.com)
 
-gflag=""
+# reset global variables
+OPTIND=1
 
-# [START]SOURCE
+gflag=""
+garg=""
+sarg=""
+error=off
+
 PG_PORT_PRE=84
 PG_DIR_PRE=$HOME/databases
 
 MY_PORT_PRE=73
 MY_DIR_PRE=$HOME/databases
 
-export PS1="[\u@\h \w][$1]\\$ "
-export PGPORT=$PG_PORT_PRE$1
-export PGDATA=$PG_DIR_PRE/data/pgdata$PGPORT
-export LANG=en_US.utf8
-export PGHOME=$PG_DIR_PRE/pgsql$PGPORT
-#export LD_LIBRARY_PATH=$PGHOME/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
-export DATE=`date +"%Y%m%d%H%M"`
-export MANPATH=$PGHOME/share/man:$MANPATH
-export PGHOST=$PGDATA
-export PGUSER=postgres
-export PGDATABASE=postgres
-
-if [[ $PATH =~ $PGHOME/bin ]]
-then
-  :
-else
-  export PATH=$PGHOME/bin:$PATH
-fi
-
-
-export MYSQLPORT=$MY_PORT_PRE$1
-export MYSQLHOME=$MY_DIR_PRE/mysql$MYSQLPORT
-export MYSQLDATA=$MY_DIR_PRE/data/mydata$MYSQLPORT
-
-if [[ $PATH =~ $MYSQLHOME/bin ]]
-then
-  :
-else
-  export PATH=$PGHOME/bin:$MYSQLHOME/bin:$PATH:.
-fi
-# [END]SOURCE
-
-
-# https://github.com/alexanderepstein/Bash-Snippets/blob/master/todo/todo
+# 
 usage()
 {
 cat <<EOF
@@ -72,7 +44,7 @@ set_alias()
    		echo "[LOG] genv already exists in $2"
 	else
 		echo "[LOG] set alias in $2"
-   		echo "alias pp=\"source `pwd`/`basename $0`\"" >> $2
+   		echo "alias pp=\"source `pwd`/`basename $0` -s\"" >> $2
 	fi
 	echo "[LOG] grep \"genv\" in $2"
 	echo -e "[LOG] \c"
@@ -167,44 +139,92 @@ EOF
 fi
 }
 
-while getopts "a:c:h" opt; do
+while getopts "a:c:s:h" opt; do
 	case "$opt" in
 		\?) echo "[ERROR] Invalid option: -$OPTARG" >&2
-			exit 1
+			error=on
 			;;
 		h)  usage
 			exit 0
 			;;
 		a)  if [[ $gflag == "" ]]; then
 				gflag="alias"
+				garg=$OPTARG
 			else
 				echo "[ERROR] all flags are mutually exclusive"
-				exit 1
+				error=on
 			fi
 			;;
 		c)  if [[ $gflag == "" ]]; then
 				gflag="cheetsheet"
+				garg=$OPTARG
 			else
 				echo "[ERROR] all flags are mutually exclusive"
-				exit 1
+				error=on
 			fi
 			;;
+		s)  if [[ $sarg == "" ]]; then
+				sarg=$OPTARG
+			else
+				echo "[ERROR] -s are mutually exclusive"
+				error=on
+			fi
 	esac
 done
 
-if [[ $# == 0 ]]; then
-	usage
-	exit 0
-elif [[ $gflag == "cheetsheet" ]]; then
-	cheetsheet "ph" $3 || exit 1
-	exit 0
-elif [[ $gflag == "alias" ]]; then
-	set_alias "ph" $3 || exit 1
-	exit 0
+if [[ $sarg == "" ]]; then
+	echo "[ERROR] need -s"
+	error=on
 fi
 
+if [ $error == on ]; then
+	echo "[ERROR] something went wrong, do nothing"
+else
+###########################################################
+# [START]SOURCE
 
+	export PS1="[\u@\h \w][$sarg]\\$ "
+	export PGPORT=$PG_PORT_PRE$sarg
+	export PGDATA=$PG_DIR_PRE/data/pgdata$PGPORT
+	export LANG=en_US.utf8
+	export PGHOME=$PG_DIR_PRE/pgsql$PGPORT
+	#export LD_LIBRARY_PATH=$PGHOME/lib:/lib64:/usr/lib64:/usr/local/lib64:/lib:/usr/lib:/usr/local/lib:$LD_LIBRARY_PATH
+	export DATE=`date +"%Y%m%d%H%M"`
+	export MANPATH=$PGHOME/share/man:$MANPATH
+	export PGHOST=$PGDATA
+	export PGUSER=postgres
+	export PGDATABASE=postgres
 
+	if [[ $PATH =~ $PGHOME/bin ]]
+	then
+	  :
+	else
+	  export PATH=$PGHOME/bin:$PATH
+	fi
 
+	export MYSQLPORT=$MY_PORT_PRE$sarg
+	export MYSQLHOME=$MY_DIR_PRE/mysql$MYSQLPORT
+	export MYSQLDATA=$MY_DIR_PRE/data/mydata$MYSQLPORT
 
+	if [[ $PATH =~ $MYSQLHOME/bin ]]
+	then
+	  :
+	else
+	  export PATH=$PGHOME/bin:$MYSQLHOME/bin:$PATH:.
+	fi
+# [END]SOURCE
+############################################################
+	if [[ $gflag == "alias" ]]; then
+		set_alias "ph" $garg
+	elif [[ $gflag == "cheetsheet" ]]; then
+		cheetsheet "ph" $garg
+	fi
+fi
 
+unset gflag
+unset garg
+unset sarg
+unset PG_PORT_PRE
+unset PG_DIR_PRE
+unset MY_PORT_PRE
+unset MY_DIR_PRE
