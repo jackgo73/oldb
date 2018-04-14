@@ -6,6 +6,17 @@ PREPARE TRANSACTION并不是设计为在应用或者交互式 会话中使用。
 
 注意：让一个事务处于准备好状态太久是不明智的。这将会干扰 VACUUM回收存储的能力，并且在极限情况下可能导致 数据库关闭以阻止事务 ID 回卷。该事务会继续持有它已经持有的锁。该特性的设计用法是只要一个外部事务管理器已经验证其他数据库也准备好了要提交，一个准备好的事务将被正常地提交或者回滚。如果没有建立一个外部事务管理器来跟踪准备好的事务并且确保它们被迅速地结束，最好禁用准备好事务特性（设置 max_prepared_transactions为零）。这将防止意外 地创建准备好事务，不然该事务有可能被忘记并且最终导致问题。 
 
+## 两阶段提交的原理是什么？
+
+二阶段提交的算法思路可以概括为
+
+- 协调者询问参与者是否准备好了提交，并根据所有参与者的反馈情况决定向所有参与者发送commit或者rollback指令（协调者向所有参与者发送相同的指令）。
+
+两阶段是指
+
+- 准备阶段 又称投票阶段。在这一阶段，协调者询问所有参与者是否准备好提交，参与者如果已经准备好提交则回复Prepared，否则回复Non-Prepared。
+- 提交阶段 又称执行阶段。协调者如果在上一阶段收到所有参与者回复的Prepared，则在此阶段向所有参与者发送commit指令，所有参与者立即执行commit操作；否则协调者向所有参与者发送rollback指令，参与者立即执行rollback操作。
+
 ## 两阶段语法、相关视图是什么？
 
 ```sql
@@ -16,7 +27,13 @@ ROLLBACK PREPARED;
 select * from pg_prepared_xacts;
 ```
 
-## 状态信息文件的生命周期？
+注意：
+
+- `PREPARE TRANSACTION transaction_id`命令后，事务就不再和当前会话关联，因此当前session可继续执行其它事务。
+- `COMMIT PREPARED`和`ROLLBACK PREPARED`可在任何会话中执行，而并不要求在提交准备的会话中执行。
+- 默认情况下，PostgreSQL并不开启两阶段提交，可以通过在`postgresql.conf`文件中设置`max_prepared_transactions`配置项开启PostgreSQL的两阶段提交。
+
+## PG两阶段状态信息文件的生命周期？
 
 1. PREPARE TRANSACTION时，后台把状态信息只写到WAL中，并将WAL指针存在gxact->prepare_start_lsn中。
 
@@ -36,9 +53,7 @@ case TBLOCK_PREPARE:
       EndPrepare(gxact);
 ```
 
-
-
-##StartPrepare都记了什么？
+## StartPrepare都记了什么？
 
 ```
 	uint32		magic;			/* format identifier */
@@ -143,3 +158,48 @@ xact_redo(XLogReaderState *record)
 
 ## EndPrepare将状态信息丢入XLOG是哪次提交合入的？
 
+[728bd991c3c4389fb39c45dcb0fe57e4a1dccd71](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=728bd991c3c4389fb39c45dcb0fe57e4a1dccd71)
+
+```
+Speedup 2PC recovery by skipping two phase state files in normal path
+
+2PC state info held in shmem at PREPARE, then cleaned at COMMIT PREPARED/ABORT PREPARED,
+avoiding writing/fsyncing any state information to disk in the normal path, greatly enhancing replay speed.
+Prepared transactions that live past one checkpoint redo horizon will be written to disk as now.
+Similar conceptually to 978b2f65aa1262eb4ecbf8b3785cb1b9cf4db78e and building upon
+the infrastructure created by that commit.
+
+Authors, in equal measure: Stas Kelvich, Nikhil Sontakke and Michael Paquier
+Discussion: https://postgr.es/m/CAMGcDxf8Bn9ZPBBJZba9wiyQq-Qk5uqq=VjoMnRnW5s+fKST3w@mail.gmail.com
+```
+
+主要改动twophase.c
+
+```
+https://git.postgresql.org/gitweb/?p=postgresql.git;a=blobdiff;f=src/backend/access/transam/twophase.c;h=d0e2bbf2916bcedaf5a81cd5cbb8e5c8dc4323ba;hp=83169cccc301179a601b33d7ae0f87145ddd2450;hb=728bd991c3c4389fb39c45dcb0fe57e4a1dccd71;hpb=60a0b2ec8943451186dfa22907f88334d97cb2e0
+```
+
+
+
+## 分布式事务如何保证原子性？
+
+在分布式系统中，各个节点之间在物理上相互独立，通过网络进行协调。每个独立的节点由于存在事务机制，可以保证其数据操作的ACID特性。但是各节点之间由于相互独立，无法确切地知道其经节点中的事务执行情况，所以多节点之间很难保证ACID，尤其是原子性。
+
+如果要实现分布式系统的原子性，则须保证所有节点的数据写操作，要不全部都执行，要么全部都不执行。但是一个节点在执行本地事务的时候无法知道其它机器的本地事务的执行结果，所以它就不知道本次事务到底应该commit还是 roolback。常规的解决办法是引入一个“协调者”的组件来统一调度所有分布式节点的执行。
+
+## 两阶段提交的几种错误形式？
+
+两阶段提交中的异常主要分为如下三种情况
+
+- 协调者正常，参与方crash
+
+  若参与方在准备阶段crash，则协调者收不到Prepared回复，协调方不会发送commit命令，事务不会真正提交。若参与方在提交阶段提交，当它恢复后可以通过从其它参与方或者协调方获取事务是否应该提交，并作出相应的响应。
+
+- 协调者crash，参与者正常
+
+  可以通过选出新的协调者解决。
+
+
+- 协调者和参与方都crash
+
+  无法完美解决，尤其是当协调者发送出commit命令后，唯一收到commit命令的参与者也crash，此时其它参与方不能从协调者和已经crash的参与者那儿了解事务提交状态。但如同上一节两阶段提交前提条件所述，两阶段提交的前提条件之一是所有crash的节点最终都会恢复，所以当收到commit的参与方恢复后，其它节点可从它那里获取事务状态并作出相应操作。
