@@ -1,5 +1,28 @@
 # Notebook
 
+## SMB
+
+```
+yum install samba samba-client 
+
+vim /etc/samba/smb.conf
+-->
+[homes]
+  comment = Home Directories
+  browseable = Yes
+  read only = No
+  valid users = jackgo
+smbpasswd -a jackgo
+firewall-cmd --permanent --zone=public --add-service=samba
+firewall-cmd --reload
+setenforce 0
+vi /etc/selinux/config
+--> SELINUX=disabled
+
+systemctl enable smb nmb
+systemctl restart smb nmb
+```
+
 ## Github
 
 ```
