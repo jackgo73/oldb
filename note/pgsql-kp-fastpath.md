@@ -97,10 +97,10 @@ struct PGPROC
 }
 ```
 
-| 二进制位的含义                                               |
-| ------------------------------------------------------------ |
-| uint64  fpLockBits   :   000    000   000   000   000   ...   000   (使用16*3=48个二进制位) |
-| oid        fpRelId[16]  :   oid     oid    oid    oid    oid   ...    oid   (16个oid) |
+| 变量                   | 二进制位的含义                                               |
+| ---------------------- | ------------------------------------------------------------ |
+| uint64  fpLockBits     | 000    000   000   000   000   ...   000   (使用16*3=48个二进制位) |
+| oid        fpRelId[16] | oid     oid    oid    oid    oid   ...    oid   (16个oid)    |
 
 其中 每一组000中，三个0从左到右为 RowExclusiveLock RowShareLock AccessShareLock
 
