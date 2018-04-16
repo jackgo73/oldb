@@ -4,11 +4,27 @@
 
 ### pgsql
 
+#### 安装部署
 
+[postgres-xl 部署记录](src/pgsql-deploy-xl.md)
+
+#### 知识点整理
+
+[两阶段相关知识点整理](src/pgsql-kp-twophase.md)
+
+[fast-path锁相关知识点整理](src/pgsql-kp-fastpath.md)
+
+[pgsql综合知识点整理](src/pgsql-kp.md)
 
 ## oracle
 
+#### 安装部署
 
+[oracle12c部署记录](https://github.com/mutex73/blog/blob/master/src/orcl-deploy-12c.md)
+
+#### sql cheetsheet
+
+[orcl-cheatsheet.sql(to_be_continued)](src/orcl-cheatsheet.sql)
 
 ## others
 
