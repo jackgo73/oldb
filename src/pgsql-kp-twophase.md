@@ -156,6 +156,53 @@ xact_redo(XLogReaderState *record)
 
 **优化 方案：在需要创建状态文件时，使用全局事务ID为key，XLogRecGetData(record)为value灌入哈希表，当需要删除时在哈希表中搜索删除对应条目。最终遍历哈希表的剩余条目，将文件创建出来。**
 
+优化方案在社区已经实现了[728bd991c3c4389fb39c45dcb0fe57e4a1dccd71](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=728bd991c3c4389fb39c45dcb0fe57e4a1dccd71)
+
+```c
+diff --git a/src/backend/access/transam/xact.c b/src/backend/access/transam/xact.c
+index c8751c6..6f614e4 100644 (file)
+--- a/src/backend/access/transam/xact.c
++++ b/src/backend/access/transam/xact.c
+@@ -5615,7 +5615,9 @@ xact_redo(XLogReaderState *record)
+            Assert(TransactionIdIsValid(parsed.twophase_xid));
+            xact_redo_commit(&parsed, parsed.twophase_xid,
+                             record->EndRecPtr, XLogRecGetOrigin(record));
+-           RemoveTwoPhaseFile(parsed.twophase_xid, false);
++
++           /* Delete TwoPhaseState gxact entry and/or 2PC file. */
++           PrepareRedoRemove(parsed.twophase_xid, false);
+        }
+    }
+    else if (info == XLOG_XACT_ABORT || info == XLOG_XACT_ABORT_PREPARED)
+@@ -5635,14 +5637,20 @@ xact_redo(XLogReaderState *record)
+        {
+            Assert(TransactionIdIsValid(parsed.twophase_xid));
+            xact_redo_abort(&parsed, parsed.twophase_xid);
+-           RemoveTwoPhaseFile(parsed.twophase_xid, false);
++
++           /* Delete TwoPhaseState gxact entry and/or 2PC file. */
++           PrepareRedoRemove(parsed.twophase_xid, false);
+        }
+    }
+    else if (info == XLOG_XACT_PREPARE)
+    {
+-       /* the record contents are exactly the 2PC file */
+-       RecreateTwoPhaseFile(XLogRecGetXid(record),
+-                         XLogRecGetData(record), XLogRecGetDataLen(record));
++       /*
++        * Store xid and start/end pointers of the WAL record in
++        * TwoPhaseState gxact entry.
++        */
++       PrepareRedoAdd(XLogRecGetData(record),
++                      record->ReadRecPtr,
++                      record->EndRecPtr);
+    }
+    else if (info == XLOG_XACT_ASSIGNMENT)
+    {
+```
+
+
+
 ## EndPrepare将状态信息丢入XLOG是哪次提交合入的？
 
 [728bd991c3c4389fb39c45dcb0fe57e4a1dccd71](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=728bd991c3c4389fb39c45dcb0fe57e4a1dccd71)
