@@ -4,27 +4,31 @@
 
 ### pgsql
 
+#### 应用实践
+
+20180417 [pg_dump导入导出实践](src/pgsql-fun-pgdump.md)
+
 #### 安装部署
 
-[postgres-xl 部署记录](src/pgsql-deploy-xl.md)
+20170505 [postgres-xl 部署记录](src/pgsql-deploy-xl.md)
 
 #### 知识点整理
 
-[两阶段相关知识点整理](src/pgsql-kp-twophase.md)
+20180410 [pgsql综合知识点整理](src/pgsql-kp.md)
 
-[fast-path锁相关知识点整理](src/pgsql-kp-fastpath.md)
+20180413 [fast-path锁相关知识点整理](src/pgsql-kp-fastpath.md)
 
-[pgsql综合知识点整理](src/pgsql-kp.md)
+20180414 [两阶段相关知识点整理](src/pgsql-kp-twophase.md)
 
 ## oracle
 
 #### 安装部署
 
-[oracle12c部署记录](https://github.com/mutex73/blog/blob/master/src/orcl-deploy-12c.md)
+20180310 [oracle12c部署记录](https://github.com/mutex73/blog/blob/master/src/orcl-deploy-12c.md)
 
 #### sql cheetsheet
 
-[orcl-cheatsheet.sql(to_be_continued)](src/orcl-cheatsheet.sql)
+20180311 [orcl-cheatsheet.sql(to_be_continued)](src/orcl-cheatsheet.sql)
 
 ## others
 
