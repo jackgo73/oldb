@@ -21,12 +21,14 @@ usage()
 cat <<EOF
 genv
 Description: A simplistic tool for db-deployment.
-Usage: source genv [num] or genv [flags] [arguments]
+Usage: genv -s [num] 
+       genv -s [num] -c [options]
+       genv -a ~/.bashrc
   -a  add alias to .bash* file
   -c  Cheetsheet
       sys    :  system installation help
-      pgtest :  pgsql test statement
-      pgrep  :  pgsql replication
+      pgutil :  pgsql statements
+ 
 
 Examples:
   source genv 00
@@ -169,6 +171,7 @@ insert into t5 select generate_series(1,4000000),md5(random()::text),clock_times
 insert into t6 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
 insert into t7 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
 insert into t8 select generate_series(1,5000000),md5(random()::text),clock_timestamp();
+drop table t1,t2,t3,t4,t5,t6,t7,t8;
 ==========================================================================
 date;pg_dump -f ./pgsql.dmp -F d -E UTF8 -j 8 -h $PGDATA -p 8400 -U postgres postgres;date
 postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_locks t1,pg_class t2 where t1.relation=t2.oid  and pid in (28381,28375) order by pid,relation;
