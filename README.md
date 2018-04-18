@@ -6,7 +6,7 @@
 
 #### 应用实践
 
-20180417 [pg_dump导入导出实践](src/pgsql-fun-pgdump.md)
+20180417 [pg_dump几种导出方式测试](src/pgsql-fun-pgdump.md)
 
 20180418 [Postgresql冷备份与恢复实战](https://github.com/mutex73/blog/blob/master/src/pgsql-fun-offlinebackup.md)
 
