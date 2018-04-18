@@ -1,4 +1,4 @@
-# Postgresql冷备份与恢复实践
+# Postgresql冷备份与恢复实战
 
 > JackGao
 >
