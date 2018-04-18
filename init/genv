@@ -144,6 +144,7 @@ cat << EOF
 ==========================================================================
 [keep updating]
 create unlogged table test03 (id int primary key, info text);
+create table test03 (id int primary key, info text);
 
 \set id random(1,100)
 insert into test03 values(:id, repeat(md5(random()::text), 1000)) on conflict on constraint test03_pkey do update set info=excluded.info;
