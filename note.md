@@ -1,5 +1,27 @@
 # Notebook
 
+## xxx
+
+```
+vi /boot/grub2/grub.cfg
+%s/UTF-8/UTF-8 vga=0x344
+
+```
+
+## Network
+
+```
+vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+```
+
+## SSH
+
+```
+chkconfig sshd on
+service sshd start
+yum install net-tools bzip2 vim
+```
+
 ## SMB
 
 ```
