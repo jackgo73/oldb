@@ -12,6 +12,7 @@ vi /boot/grub2/grub.cfg
 
 ```
 vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+systemctl restart netword.service
 ```
 
 ## SSH
