@@ -186,6 +186,150 @@ postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_lo
  28375 |    13323 |    16438 | relation | AccessShareLock | t       | t8
 ==========================================================================
 EOF
+elif [[ $2 == "plproxy" ]]; then
+############################################################
+cat << EOF
+==========================================================================
+wget -S https://github.com/plproxy/plproxy/archive/plproxy_2_8.tar.gz
+tar xzvf plproxy_2_8.tar.gz
+gmake clean;gmake;gmake install
+create role proxy nosuperuser login encrypted password 'proxy';
+create database proxy;
+\c proxy
+create extension plproxy;
+grant all on database proxy to proxy;
+\c proxy proxy
+create schema pl;
+\c postgres postgres
+grant all on schema pl to proxy;
+create role jackgo nosuperuser login encrypted password '333';
+create database db0;
+create database db1;
+create database db2;
+create database db3;
+grant all on database db0 to jackgo;
+grant all on database db1 to jackgo;
+grant all on database db2 to jackgo;
+grant all on database db3 to jackgo;
+==========================================================================
+\c proxy postgres
+CREATE SERVER cluster_srv1 FOREIGN DATA WRAPPER plproxy options   
+(connection_lifetime '1800',  
+p0 'dbname=db0 hostaddr=127.0.0.1 port=8400 application_name=test',  
+p1 'dbname=db1 hostaddr=127.0.0.1 port=8400',  
+p2 'dbname=db2 hostaddr=127.0.0.1 port=8400',  
+p3 'dbname=db3 hostaddr=127.0.0.1 port=8400');
+grant usage on FOREIGN server cluster_srv1 to proxy;
+create user mapping for proxy server cluster_srv1 options (user 'jackgo');
+==========================================================================
+vi $PGDATA/pg_hba.conf  
+host db0 jackgo 127.0.0.1/32 trust  
+host db1 jackgo 127.0.0.1/32 trust  
+host db2 jackgo 127.0.0.1/32 trust  
+host db3 jackgo 127.0.0.1/32 trust  
+pg_ctl reload  
+==========================================================================
+[proxy node]
+CREATE OR REPLACE FUNCTION pl.dy(sql text)                    
+ RETURNS SETOF record  
+ LANGUAGE plproxy  
+ STRICT  
+AS $function$  
+  cluster 'cluster_srv1';  
+  run on all;  
+$function$;
+grant execute on function pl.dy(text) to proxy;
+==========================================================================
+[data node]
+\c db0 jackgo
+create schema pl;
+CREATE OR REPLACE FUNCTION pl.dy(sql text)  
+ RETURNS SETOF record  
+ LANGUAGE plpgsql  
+ STRICT  
+AS $function$  
+  declare  
+  rec record;  
+  begin  
+    for rec in execute sql loop  
+      return next rec;  
+    end loop;  
+    return;  
+  end;  
+$function$;
+\c db1 jackgo
+\c db2 jackgo
+\c db3 jackgo
+
+select * from pl.dy('select count(*) from pg_class') as t(i int8);
+select sum(i) from pl.dy('select count(*) from pg_class') as t(i int8);
+==========================================================================
+[run on 4]
+\c db0 jackgo
+create table t(id int);
+create or replace function pl.f_test4() returns int as $$  
+declare  
+begin  
+insert into t(id) values (1);  
+return 0;  
+end;  
+$$ language plpgsql strict;  
+
+\c db1 jackgo
+create table t(id int);
+create or replace function pl.f_test4() returns int as $$  
+declare  
+begin  
+insert into t(id) values (1);  
+return 1;  
+end;  
+$$ language plpgsql strict;
+
+\c db2 jackgo
+create table t(id int);
+create or replace function pl.f_test4() returns int as $$  
+declare  
+begin  
+insert into t(id) values (1);  
+return 2;  
+end;  
+$$ language plpgsql strict;
+
+\c db3 jackgo
+create table t(id int);
+create or replace function pl.f_test4() returns int as $$  
+declare  
+begin  
+insert into t(id) values (1);  
+return 3;  
+end;  
+$$ language plpgsql strict;
+
+\c proxy postgres
+create or replace function pl.f_test4() returns int as $$  
+cluster 'cluster_srv1';  
+run on 0; 
+$$ language plproxy strict;
+grant execute on function pl.f_test4() to proxy;
+
+\c proxy proxy
+select * from pl.f_test4();
+==========================================================================
+[run on function()]
+create or replace function pl.f(int) returns int as $$  
+select $1;  
+$$ language sql strict;
+\c proxy postgres
+create or replace function pl.f_test4() returns int as $$  
+cluster 'cluster_srv1';  
+run on pl.f(1);    
+$$ language plproxy strict;  
+
+select pl.f_test4();
+
+https://yq.aliyun.com/articles/59345
+==========================================================================
+EOF
 fi
 }
 
