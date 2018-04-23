@@ -222,7 +222,7 @@ p3 'dbname=db3 hostaddr=127.0.0.1 port=8400');
 grant usage on FOREIGN server cluster_srv1 to proxy;
 create user mapping for proxy server cluster_srv1 options (user 'jackgo');
 ==========================================================================
-vi $PGDATA/pg_hba.conf  
+vi \$PGDATA/pg_hba.conf  
 host db0 jackgo 127.0.0.1/32 trust  
 host db1 jackgo 127.0.0.1/32 trust  
 host db2 jackgo 127.0.0.1/32 trust  
@@ -234,10 +234,10 @@ CREATE OR REPLACE FUNCTION pl.dy(sql text)
  RETURNS SETOF record  
  LANGUAGE plproxy  
  STRICT  
-AS $function$  
+AS \$function\$  
   cluster 'cluster_srv1';  
   run on all;  
-$function$;
+\$function\$;
 grant execute on function pl.dy(text) to proxy;
 ==========================================================================
 [data node]
@@ -247,7 +247,7 @@ CREATE OR REPLACE FUNCTION pl.dy(sql text)
  RETURNS SETOF record  
  LANGUAGE plpgsql  
  STRICT  
-AS $function$  
+AS \$function\$  
   declare  
   rec record;  
   begin  
@@ -256,7 +256,7 @@ AS $function$
     end loop;  
     return;  
   end;  
-$function$;
+\$function\$;
 \c db1 jackgo
 \c db2 jackgo
 \c db3 jackgo
@@ -273,7 +273,7 @@ begin
 insert into t(id) values (1);  
 return 0;  
 end;  
-$$ language plpgsql strict;  
+\$$ language plpgsql strict;  
 
 \c db1 jackgo
 create table t(id int);
@@ -283,47 +283,47 @@ begin
 insert into t(id) values (1);  
 return 1;  
 end;  
-$$ language plpgsql strict;
+\$$ language plpgsql strict;
 
 \c db2 jackgo
 create table t(id int);
-create or replace function pl.f_test4() returns int as $$  
+create or replace function pl.f_test4() returns int as \$$  
 declare  
 begin  
 insert into t(id) values (1);  
 return 2;  
 end;  
-$$ language plpgsql strict;
+\$$ language plpgsql strict;
 
 \c db3 jackgo
 create table t(id int);
-create or replace function pl.f_test4() returns int as $$  
+create or replace function pl.f_test4() returns int as \$$  
 declare  
 begin  
 insert into t(id) values (1);  
 return 3;  
 end;  
-$$ language plpgsql strict;
+\$$ language plpgsql strict;
 
 \c proxy postgres
-create or replace function pl.f_test4() returns int as $$  
+create or replace function pl.f_test4() returns int as \$$  
 cluster 'cluster_srv1';  
 run on 0; 
-$$ language plproxy strict;
+\$$ language plproxy strict;
 grant execute on function pl.f_test4() to proxy;
 
 \c proxy proxy
 select * from pl.f_test4();
 ==========================================================================
 [run on function()]
-create or replace function pl.f(int) returns int as $$  
-select $1;  
-$$ language sql strict;
+create or replace function pl.f(int) returns int as \$\$  
+select \$1;  
+\$\$ language sql strict;
 \c proxy postgres
-create or replace function pl.f_test4() returns int as $$  
+create or replace function pl.f_test4() returns int as \$\$  
 cluster 'cluster_srv1';  
 run on pl.f(1);    
-$$ language plproxy strict;  
+\$\$ language plproxy strict;  
 
 select pl.f_test4();
 
