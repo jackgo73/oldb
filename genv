@@ -182,6 +182,7 @@ create table j8(id int, info int);
 insert into j8 select generate_series(1,10000),10;
 insert into j8 select generate_series(1,20000),20;
 insert into j8 select generate_series(1,30000),30;
+insert into j8 select generate_series(1,40000),-30;
 select * from pg_stats where tablename='j8' and attname='info';
 ==========================================================================
 date;pg_dump -f ./pgsql.dmp -F d -E UTF8 -j 8 -h $PGDATA -p 8400 -U postgres postgres;date
