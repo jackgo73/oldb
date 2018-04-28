@@ -10,7 +10,7 @@ https://en.wikibooks.org/wiki/SQL_Exercises/Planet_Express
 
 ## 背景
 
-在planet express案例中，做几种SQL执行计划的分析和成本计算。
+在planet express案例中，尝试做几种SQL执行计划的分析和成本计算。
 
 PostgreSQL 9.6.8相关参数：
 
