@@ -196,6 +196,25 @@ postgres=# select pid,database,relation,locktype,mode,granted,relname from pg_lo
 -------+----------+----------+----------+-----------------+---------+---------
  28375 |    13323 |    16438 | relation | AccessShareLock | t       | t8
 ==========================================================================
+pg_hba.conf
+local   replication     postgres                                trust
+host    replication     postgres        127.0.0.1/32            trust
+host    replication     postgres        ::1/128                 trust
+postgresql.conf
+max_wal_senders = 10
+wal_level = replica
+archive_command = 'cp %p $PGHOME/archive'
+
+pg_basebackup -D ./pgdata8401 -F p -X stream
+
+postgresql.conf
+port = 8401
+hot_standby = on
+recovery.conf
+standby_mode = on
+primary_conninfo = 'host=localhost port=8400'
+recovery_target_timeline = 'latest'
+==========================================================================
 EOF
 elif [[ $2 == "plproxy" ]]; then
 ############################################################
