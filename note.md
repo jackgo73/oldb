@@ -12,6 +12,15 @@ vi /boot/grub2/grub.cfg
 
 ```
 vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+BOOTPROTO=static
+ONBOOT=yes
+
+DNS1=114.114.114.114
+IPADDR=192.168.1.84
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+
 systemctl restart netword.service
 ```
 
