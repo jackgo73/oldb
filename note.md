@@ -22,6 +22,10 @@ NETMASK=255.255.255.0
 GATEWAY=192.168.1.1
 
 systemctl restart netword.service
+
+# for some other ports 
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+firewall-cmd --reload 
 ```
 
 ## SSH
