@@ -8,7 +8,7 @@
 
 ## PG ALL IN脚本
 
-[genv](genv)
+[genv](scripts/genv)
 
 
 
