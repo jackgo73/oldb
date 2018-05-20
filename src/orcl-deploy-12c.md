@@ -1,4 +1,4 @@
-# 安装oracle12c记录
+# oracle12c安装记录
 
 12c（linuxamd64_12102_database_se2）。
 

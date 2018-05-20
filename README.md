@@ -2,7 +2,29 @@
 
 ## Blogs
 
-整理csdn  githubpages 本地的笔记   ing...........
+### postgresql
+
+
+
+
+
+
+
+### oracle
+
+[《oracle12c安装记录》](src/orcl-deploy-12c.md)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
