@@ -54,6 +54,7 @@ firewall-cmd --reload
 setenforce 0
 vi /etc/selinux/config
 --> SELINUX=disabled
+--> !! DO NOT CHANGE SELINUXTYPE
 
 systemctl enable smb nmb
 systemctl restart smb nmb
@@ -92,3 +93,11 @@ yum install google-chrome-stable -y --nogpgcheck
 https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
 ```
 
+## Rescue
+
+grub2 press 'e'
+
+find 'linux16 ... ro'
+change to 'linux16 ... rw init /sysboot/bin/sh '
+ctrl + x
+chroot/sysroot/
