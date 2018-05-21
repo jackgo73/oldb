@@ -1,0 +1,60 @@
+# ORACLE12c安装脚本
+```
+   639 ./sshsetup/sshUserSetup.sh
+     7 ./install/detachHome.sh
+     6 ./install/runInstaller.sh
+     1 ./install/addLangs.sh
+     8 ./install/attachHome.sh
+    34 ./stage/cvu/cv/remenv/exectask.sh
+  1487 ./stage/cvu/cv/remenv/orarun.sh
+    70 ./stage/cvu/cv/remenv/pluggable/css_reboot_time.sh
+    82 ./stage/cvu/cv/remenv/pluggable/bdump_dest_trace_analyzer.sh
+    77 ./stage/cvu/cv/remenv/pluggable/zeroconf.sh
+   185 ./stage/cvu/cv/remenv/pluggable/check_bpf_devices.sh
+    68 ./stage/cvu/cv/remenv/pluggable/check_e1000.sh
+    67 ./stage/cvu/cv/remenv/pluggable/check_non_routable_network_interconnect.sh
+    87 ./stage/cvu/cv/remenv/pluggable/ora_00600_errors_analyzer.sh
+    49 ./stage/cvu/cv/remenv/pluggable/getASMDiskInfo.sh
+    42 ./stage/cvu/cv/remenv/pluggable/check_symvers.sh
+    71 ./stage/cvu/cv/remenv/pluggable/css_diagwait.sh
+   102 ./stage/cvu/cv/remenv/pluggable/css_misscount.sh
+   209 ./stage/cvu/cv/remenv/pluggable/checkmemlock.sh
+   301 ./stage/cvu/cv/remenv/pluggable/check_rp_filter.sh
+    68 ./stage/cvu/cv/remenv/pluggable/listener_naming_convention.sh
+    74 ./stage/cvu/cv/remenv/pluggable/hangcheck_reboot.sh
+    88 ./stage/cvu/cv/remenv/pluggable/css_disk_timeout.sh
+    78 ./stage/cvu/cv/remenv/pluggable/alert_log_file_size_analyzer.sh
+   165 ./stage/cvu/cv/remenv/pluggable/check_network_param.sh
+    97 ./stage/cvu/cv/remenv/pluggable/checkcorefile.sh
+    71 ./stage/cvu/cv/remenv/pluggable/check_vip_restart_attempt.sh
+    74 ./stage/cvu/cv/remenv/pluggable/hangcheck_margin.sh
+    74 ./stage/cvu/cv/remenv/pluggable/check_network_packet_reassembly.sh
+    72 ./stage/cvu/cv/remenv/pluggable/check_tcp_packet_retransmit.sh
+    93 ./stage/cvu/cv/remenv/pluggable/checksshd.sh
+    96 ./stage/cvu/cv/remenv/pluggable/checkramfs.sh
+    45 ./stage/cvu/cv/remenv/pluggable/checkIOCPDeviceStatus.sh
+    83 ./stage/cvu/cv/remenv/pluggable/core_dump_dest_analyzer.sh
+   193 ./stage/cvu/cv/remenv/pluggable/checkhugepage.sh
+    69 ./stage/cvu/cv/remenv/pluggable/check_default_gateway.sh
+    74 ./stage/cvu/cv/remenv/pluggable/hangcheck_tick.sh
+    52 ./stage/cvu/cv/remenv/pluggable/mus_check.sh
+    42 ./stage/cvu/cv/remenv/pluggable/checkGSDResourceStatus.sh
+    79 ./stage/cvu/cv/remenv/pluggable/checkportavail.sh
+    34 ./stage/cvu/cv/remenv/pluggable/common_include.sh
+    65 ./stage/cvu/cv/remenv/pluggable/check_vmm.sh
+    25 ./stage/cvu/cv/remenv/pluggable/getNICSpeed.sh
+   314 ./stage/cvu/cv/remenv/pluggable/checktmpfs.sh
+    68 ./stage/cvu/cv/remenv/pluggable/check_disk_asynch_io_linking.sh
+   164 ./stage/cvu/cv/remenv/pluggable/check_jumbo_frames.sh
+   309 ./stage/cvu/cv/remenv/pluggable/check_network_bonding.sh
+   103 ./stage/cvu/cv/remenv/pluggable/checksyslog.sh
+    69 ./stage/cvu/cv/remenv/pluggable/hangchecktimer.sh
+    89 ./stage/cvu/cv/remenv/pluggable/ora_07445_errors_analyzer.sh
+   178 ./stage/cvu/cv/remenv/pluggable/shutdown_hwclock_sync.sh
+    72 ./stage/cvu/cv/remenv/pluggable/checkIPHostModel.sh
+   124 ./stage/cvu/cv/remenv/runfixup.sh
+   119 ./stage/fastcopy/setperms1.sh
+  7012 total
+
+```
+
