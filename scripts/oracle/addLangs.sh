@@ -1,0 +1,1 @@
+./runInstaller -addLangs $*
