@@ -1,12 +1,18 @@
 # ORACLE12c安装脚本
-```
+```shell
    639 ./sshsetup/sshUserSetup.sh
+   
+       # useless
      7 ./install/detachHome.sh
      6 ./install/runInstaller.sh
+       # useless
      1 ./install/addLangs.sh
+       # useless
      8 ./install/attachHome.sh
+       # useless
     34 ./stage/cvu/cv/remenv/exectask.sh
   1487 ./stage/cvu/cv/remenv/orarun.sh
+       # useless
     70 ./stage/cvu/cv/remenv/pluggable/css_reboot_time.sh
     82 ./stage/cvu/cv/remenv/pluggable/bdump_dest_trace_analyzer.sh
     77 ./stage/cvu/cv/remenv/pluggable/zeroconf.sh
@@ -33,7 +39,9 @@
     93 ./stage/cvu/cv/remenv/pluggable/checksshd.sh
     96 ./stage/cvu/cv/remenv/pluggable/checkramfs.sh
     45 ./stage/cvu/cv/remenv/pluggable/checkIOCPDeviceStatus.sh
+       # useless
     83 ./stage/cvu/cv/remenv/pluggable/core_dump_dest_analyzer.sh
+       # 如果内存大于4GB检查hugepage  
    193 ./stage/cvu/cv/remenv/pluggable/checkhugepage.sh
     69 ./stage/cvu/cv/remenv/pluggable/check_default_gateway.sh
     74 ./stage/cvu/cv/remenv/pluggable/hangcheck_tick.sh
@@ -44,7 +52,10 @@
     65 ./stage/cvu/cv/remenv/pluggable/check_vmm.sh
     25 ./stage/cvu/cv/remenv/pluggable/getNICSpeed.sh
    314 ./stage/cvu/cv/remenv/pluggable/checktmpfs.sh
+    
+       # 检查oracle是否使用异步io库，libaio
     68 ./stage/cvu/cv/remenv/pluggable/check_disk_asynch_io_linking.sh
+       
    164 ./stage/cvu/cv/remenv/pluggable/check_jumbo_frames.sh
    309 ./stage/cvu/cv/remenv/pluggable/check_network_bonding.sh
    103 ./stage/cvu/cv/remenv/pluggable/checksyslog.sh
@@ -55,6 +66,5 @@
    124 ./stage/cvu/cv/remenv/runfixup.sh
    119 ./stage/fastcopy/setperms1.sh
   7012 total
-
 ```
 

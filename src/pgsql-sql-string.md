@@ -250,7 +250,109 @@ postgres=# explain (analyze,verbose,timing,costs,buffers) select * from pre_suff
 (11 rows)
 ```
 
+
+
+强制关闭 bitmap scan ，自动启动并发查询计划。
+
+```
+create table test001(c1 text);
+insert into test001 select md5(random()::text) from generate_series(1,1000000);
+create index idx_test001_1 on test001 using gin (c1 gin_trgm_ops);
+select * from test001 limit 1 offset random()*1000000;
+                c1                
+----------------------------------
+ c16d8f0e7d1e1665fbf74535fa9f5188
+(1 row)
+
+explain (analyze,verbose,timing,costs,buffers) select * from test001 where c1 like '%1e1665%';
+                                                        QUERY PLAN                                                        
+--------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on public.test001  (cost=280.77..649.16 rows=100 width=33) (actual time=2.973..2.976 rows=3 loops=1)
+   Output: c1
+   Recheck Cond: (test001.c1 ~~ '%1e1665%'::text)
+   Rows Removed by Index Recheck: 1
+   Heap Blocks: exact=4
+   Buffers: shared hit=84
+   ->  Bitmap Index Scan on idx_test001_1  (cost=0.00..280.75 rows=100 width=0) (actual time=2.961..2.961 rows=4 loops=1)
+         Index Cond: (test001.c1 ~~ '%1e1665%'::text)
+         Buffers: shared hit=80
+ Planning time: 0.150 ms
+ Execution time: 3.020 ms
+ 
+ postgres=# set enable_bitmapscan=0;
+ SET
+ 
+ postgres=# explain (analyze,verbose,timing,costs,buffers) select * from test001 where c1 like '%1e1665%';
+                                                           QUERY PLAN                                                           
+--------------------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=1000.00..14552.33 rows=100 width=33) (actual time=1.982..161.243 rows=3 loops=1)
+   Output: c1
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=1498 read=752
+   ->  Parallel Seq Scan on public.test001  (cost=0.00..13542.33 rows=42 width=33) (actual time=79.932..153.136 rows=1 loops=3)
+         Output: c1
+         Filter: (test001.c1 ~~ '%1e1665%'::text)
+         Rows Removed by Filter: 333332
+         Buffers: shared hit=5607 read=2727
+         Worker 0: actual time=89.953..150.319 rows=1 loops=1
+           Buffers: shared hit=2689 read=1310
+         Worker 1: actual time=148.332..148.332 rows=0 loops=1
+           Buffers: shared hit=1420 read=665
+ Planning time: 0.209 ms
+ Execution time: 162.635 ms
+(16 rows)
+```
+
+
+
 ## 正则匹配查询
 
 PostgreSQL 正则匹配的语法为 `字符串 ~ 'pattern'` 或 `字符串 ~* 'pattern'`
+
+```
+create table test001(c1 text);
+insert into test001 select md5(random()::text) from generate_series(1,1000000);
+create index idx_test001_1 on test001 using gin (c1 gin_trgm_ops);
+
+postgres=# explain (analyze,verbose,timing,costs,buffers) select * from test001 where c1 ~ '.*abcde.*';
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on public.test001  (cost=264.77..633.16 rows=100 width=33) (actual time=2.975..3.072 rows=23 loops=1)
+   Output: c1
+   Recheck Cond: (test001.c1 ~ '.*abcde.*'::text)
+   Rows Removed by Index Recheck: 5
+   Heap Blocks: exact=27
+   Buffers: shared hit=100
+   ->  Bitmap Index Scan on idx_test001_1  (cost=0.00..264.75 rows=100 width=0) (actual time=2.959..2.959 rows=28 loops=1)
+         Index Cond: (test001.c1 ~ '.*abcde.*'::text)
+         Buffers: shared hit=73
+ Planning time: 0.705 ms
+ Execution time: 3.117 ms
+(11 rows)
+
+
+postgres=# set enable_bitmapscan=0;
+SET
+postgres=# explain (analyze,verbose,timing,costs,buffers) select * from test001 where c1 ~ '.*abcde.*';
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Gather  (cost=1000.00..14552.33 rows=100 width=33) (actual time=63.279..954.443 rows=23 loops=1)
+   Output: c1
+   Workers Planned: 2
+   Workers Launched: 2
+   Buffers: shared hit=2781 read=405
+   ->  Parallel Seq Scan on public.test001  (cost=0.00..13542.33 rows=42 width=33) (actual time=253.066..947.521 rows=8 loops=3)
+         Output: c1
+         Filter: (test001.c1 ~ '.*abcde.*'::text)
+         Rows Removed by Filter: 333326
+         Buffers: shared hit=7298 read=1036
+         Worker 0: actual time=132.180..944.394 rows=11 loops=1
+           Buffers: shared hit=2256 read=321
+         Worker 1: actual time=564.319..944.442 rows=3 loops=1
+           Buffers: shared hit=2261 read=310
+ Planning time: 0.908 ms
+ Execution time: 956.232 ms
+(16 rows)
+```
 
