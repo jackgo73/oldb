@@ -4,35 +4,59 @@
 
 ### postgresql
 
+#### SQL引擎
+
+[《Postgresql 执行计划&索引相关》](src/pgsql-fun-explain.md)
+
+[《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
 
 
+#### 存储引擎
 
+[《两阶段提交》](src/pgsql-kp-twophase.md)
 
+[《Fast-Path Lock》](src/pgsql-kp-fastpath.md)
+
+#### 应用案例
+
+[《postgresql字符串操作总结（未完）》](src/pgsql-sql-string.md)
+
+[《Postgresql DDL 审计实战》](src/pgsql-sql-ddlaudit.md)
+
+[《Postgresql逻辑备份与恢复实战》](src/pgsql-fun-pgdumpbackup.md)
+
+[《pg_dump几种导出方式测试》](src/pgsql-fun-pgdump.md)
+
+[《Postgresql冷备份与恢复实战》](src/pgsql-fun-offlinebackup.md)
+
+[《几种HA部署方式》](src/pgsql-fun-ha.md)
+
+[《安装PostgresXL》](src/pgsql-deploy-xl.md)
+
+#### 经验技巧
+
+[《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
+
+[《LT && SQL总结》](src/sql-exec-leetcode.md)
+
+[《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
+
+#### SQL
+
+[《LT && SQL总结》](src/sql-exec-leetcode.md)
+
+[《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
 
 ### oracle
 
 [《oracle12c安装记录》](src/orcl-deploy-12c.md)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+[orcl-cheatsheet.sql](src/orcl-cheatsheet.sql)
 
 ## PG ALL IN脚本
 
 [genv](scripts/genv)
-
-
 
 ## Codeforces
 

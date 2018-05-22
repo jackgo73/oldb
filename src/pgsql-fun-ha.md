@@ -1,11 +1,10 @@
----
-title: Postgresql-HA
-date: 2017-06-02 11:43:58
-categories: Postgresql
-tags: 
-    - postgresql
-    - ha
----
+# 几种HA部署方式
+
+高铭杰
+
+2016年12月
+
+jackgo73@outlook.com
 
 ## 部署架构
 
