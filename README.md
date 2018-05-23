@@ -18,6 +18,8 @@
 
 [《Fast-Path Lock》](src/pgsql-kp-fastpath.md)
 
+[《MemoryContext分析》](src/pgsql-internal-memorycontext.md)
+
 #### 应用案例
 
 [《postgresql字符串操作总结（未完）》](src/pgsql-sql-string.md)
