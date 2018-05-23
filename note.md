@@ -1,113 +1,96 @@
-# Notebook
+qingcloud
 
-## xxx
+https://www.qingcloud.com/
 
-```
-vi /boot/grub2/grub.cfg
-%s/UTF-8/UTF-8 vga=0x344
 
-```
 
-## Network
+qunar
 
-```
-vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+https://mp.weixin.qq.com/s?__biz=MjM5MjMxMTMyOA==&mid=2649184969&idx=1&sn=503309945c42a1307932e1ccfd47e9a6&chksm=bebbcb8689cc4290c40be0b0b977a6385f2f11bc60e58f22ec6d6b7b88d9f1c3a2489ea30731&mpshare=1&scene=1&srcid=0517QCEHTKm7xpPg9dV7cS1s#rd
 
-BOOTPROTO=static
-ONBOOT=yes
 
-DNS1=114.114.114.114
-IPADDR=192.168.1.84
-NETMASK=255.255.255.0
-GATEWAY=192.168.1.1
 
-systemctl restart netword.service
+航旅纵横
 
-# for some other ports 
-firewall-cmd --zone=public --add-port=80/tcp --permanent
-firewall-cmd --reload 
-```
 
-## SSH
 
-```
-chkconfig sshd on
-service sshd start
-yum install net-tools bzip2 vim
-```
+天曦科技
 
-## SMB
 
-[《Centos Firewalld》](src/linux-centos-firewalld.md)
 
-```
-yum install samba samba-client 
+喜泊客
 
-vim /etc/samba/smb.conf
--->
-[homes]
-  comment = Home Directories
-  browseable = Yes
-  read only = No
-  valid users = jackgo
-smbpasswd -a jackgo
-firewall-cmd --permanent --zone=public --add-service=samba
-firewall-cmd --reload
-setenforce 0
-vi /etc/selinux/config
---> SELINUX=disabled
---> !! DO NOT CHANGE SELINUXTYPE
 
-systemctl enable smb nmb
-systemctl restart smb nmb
-```
 
-## Github
+腾讯
 
-```
-git config --global core.autocrlf false
-git config --global user.email "jackgo73@outlook.com"
-git config --global user.name "Jack Gao"
-ssh-keygen -t rsa -b 4096 -C "jackgo73@outlook.com"
 
-git config --global http.proxy 'socks5://127.0.0.1:1091' 
-git config --global https.proxy 'socks5://127.0.0.1:1091'
-```
 
-## Chrome
+高德地图
 
-```
-cat << EOF > /etc/yum.repos.d/google-chrome.repo
-[google-chrome]
-name=google-chrome
-baseurl=http://dl.google.com/linux/chrome/rpm/stable/\$basearch
-enabled=1
-gpgcheck=1
-gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub
-EOF
 
-yum install google-chrome-stable -y --nogpgcheck
-```
 
-## SwitchyOmega
+Pivotal
 
-```
-https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
-```
 
-## Rescue
 
-```
-grub2 press 'e'
+瀚高数据库
 
-find 'linux16 ... ro'
 
-change to 'linux16 ... rw init /sysboot/bin/sh '
 
-ctrl + x
+PingCap
 
-chroot/sysroot/
 
-```
+
+巨杉数据库
+
+
+
+云和恩墨
+
+
+
+平安保险
+
+
+
+探探科技
+
+
+
+成都文武信息技术
+
+
+
+飞象科技
+
+
+
+太阳塔科技
+
+
+
+杭州乘数科技有限公司
+
+
+
+ 苏宁云商
+
+
+
+VitesseData
+
+
+
+wwit
+
+
+
+海量数据
+
+
+
+edb
+
 
 
