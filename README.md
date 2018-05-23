@@ -10,8 +10,6 @@
 
 [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
-
-
 #### 存储引擎
 
 [《两阶段提交》](src/pgsql-kp-twophase.md)
@@ -55,6 +53,16 @@
 [《oracle12c安装记录》](src/orcl-deploy-12c.md)
 
 [orcl-cheatsheet.sql](src/orcl-cheatsheet.sql)
+
+
+
+### 未归类
+
+[《win多网卡路由》](src/utils-win-doalnetwordcardrounting.md)
+
+
+
+
 
 ## PG ALL IN脚本
 
