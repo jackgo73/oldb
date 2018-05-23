@@ -38,6 +38,8 @@ yum install net-tools bzip2 vim
 
 ## SMB
 
+[《Centos Firewalld》](src/linux-centos-firewalld.md)
+
 ```
 yum install samba samba-client 
 
@@ -95,9 +97,17 @@ https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
 
 ## Rescue
 
+```
 grub2 press 'e'
 
 find 'linux16 ... ro'
+
 change to 'linux16 ... rw init /sysboot/bin/sh '
+
 ctrl + x
+
 chroot/sysroot/
+
+```
+
+
