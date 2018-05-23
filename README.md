@@ -52,6 +52,8 @@
 
 [《oracle12c安装记录》](src/orcl-deploy-12c.md)
 
+[《Oracle监听连接》](src/orcl-fun-lsnrctl.md)
+
 [orcl-cheatsheet.sql](src/orcl-cheatsheet.sql)
 
 
