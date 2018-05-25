@@ -1,0 +1,114 @@
+Changes from 3.0b1 to 3.0
+ 1) Added support for Oracle 11.x.
+ 2) Removed support for Oracle 8.x and Oracle 9.x which are no longer supported
+    by Oracle.
+ 3) Write all SQL used for creating or restoring the database to the file
+    system to allow for manual recovery in case of failures.
+ 4) Added new script for exporting the parameter file as a means of testing
+    the contents of the generated parameter file or for seeing the contents of
+    the stored parameter file if one is being used.
+ 5) Fixed handling of parameter log_archive_duplex_dest.
+ 6) Fixed hanlding of parameters with a blank value.
+ 7) Workaround bug in Python on Linux where os.waitpid() results in an OS error
+    about no child processes.
+ 8) Make source compatible with Python 3.x without losing compatibility with
+    Python 2.x.
+
+Changes from 2.2 to 3.0b1
+ 1) Changed backup and restore to use RMAN which allows for backups while the
+    database is running. The backup utility can now create directories,
+    uncompressed tar files or tar files compressed with either gzip or bzip2
+    as desired. Server parameter files (spfiles) and password files are now
+    backed up correctly.
+ 2) Added support for Oracle 11g.
+ 3) On Windows, configuration is now read from the service directly and the
+    situation where the database is configured to start when the service
+    starts is now handled correctly.
+ 4) Created build configuration script using the new version of cx_Freeze
+    which allows for building installer images on Windows and RPM packages on
+    Linux.
+ 5) Added documentation.
+ 6) The cx_Logging module is now used for all logging instead of simply being
+    printed to stdout or stderr.
+
+Changes from 2.1 to 2.2
+ 1) Added option --replace-existing to CloneDB in order to support issuing one
+    command to replace an existing database with a copy of another one.
+ 2) Always set the enviroment, even when connecting directly using cx_Oracle,
+    as otherwise the wrong SID could be set and the wrong action take place.
+ 3) Do not prompt for the value for ORACLE_HOME if the --no-prompts option has
+    been invoked.
+ 4) Increase the size of the template system tablespace for Oracle 10g as it
+    was too small.
+ 5) On Windows, wait until the service is actually started or stopped before
+    continuing.
+
+Changes from 2.0 to 2.1
+ 1) Added support for Oracle 10g.
+ 2) Enhanced CreateDB to treat all unknown keys in each database type section
+    of the configuration file and additional parameters after the SID on the 
+    command line as user specified parameters that will be used when doing
+    the substitution in the template init.ora, template creation sql, and 
+    the template directory files.
+ 3) Enhanced ExportControlFile to include the current archive log mode so when 
+    the control file is recreated, it will be the same.
+ 4) Enhanced BackupDB to allow lower level compression by adding the --compress
+    option.
+ 5) Enhanced RestoreDB to display information about a backup file without
+    having to restore the database by adding the options --info (prints
+    summary information) and --list (lists all files in the backup).
+ 6) Enhanced RestoreDB to allow the changing of ORACLE_HOME when restoring a
+    database as a different SID.
+ 7) Enhanced StartDB to allow restarting the database if it is already started
+    by adding the options --restart and --shutdown-mode.
+ 8) Enhanced RestoreDB to remove an existing database if desired by adding the
+    options --replace-existing, --tnsentry and --sys-password.
+ 9) Added simple script which examines the memory maps on Linux to determine
+    how much shared/private/mapped memory is in use. The output of this script
+    is still less than useful for the shared and mapped memory.
+10) Stopped backing up temporary files since they can be rebuilt faster upon
+    restore.
+11) Fixed the problem of backing up the same directory twice under file
+    systems that are not case sensitive.
+12) Fixed parsing of the log_archive_dest parameter.
+13) Removed restriction on the new directory being different from the old one
+    when performing a restore so that restoring to the same location on a
+    different machine is possible.
+14) Put password in quotes in the templates so that it does not have to follow
+    Oracle naming conventions.
+15) Added parameter db_cache_size as another size parameter.
+16) Split the template OracleControl.ini into files for Windows and files for
+    Unix type machines.
+
+Changes from 1.2 to 2.0
+ 1) Added tool ExportControlFile to create a file containing the statements
+    necessary for recreating a control file. This file is similar to the one
+    created by the statement "alter database backup controlfile to trace" but
+    it allows you to specify the file name and it also modifies the statements
+    output such that recreating the controlfile is possible without any
+    changes.
+ 2) Added tool CloneDB to clone a database. This tool copies all of the files
+    associated with the database and then creates a new control file and
+    starts the cloned database.
+ 3) Added tool BackupDB to perform a cold backup on a database.
+ 4) Added tool RestoreDB to restore a database from a backup performed by the
+    tool BackupDB. This tool can also be used to restore a database with a
+    different SID and different paths so that a backup file can be restored on
+    a different machine so long as the platform and Oracle version remain
+    constant.
+ 5) Added tool RemoveDB to remove a database completely from the machine.
+ 6) Added option --all to StartDB and StopDB to start or stop all databases on
+    the machine.
+ 7) Added option --all-auto to StartDB to start all databases marked as
+    automatic start (similar to the Oracle script dbstart on Unix).
+ 8) Added ability to StartDB and StopDB to start or stop multiple databases at
+    once.
+ 9) Added option --shutdown-mode to StopDB to allow for issuing a shutdown
+    abort, for example.
+10) Added option --config-file-name on all tools to allow overriding the
+    configuration file name and also give an indication of where the default
+    configuration file is located.
+
+Changes for 1.2
+ 1) First introduced to the public.
+

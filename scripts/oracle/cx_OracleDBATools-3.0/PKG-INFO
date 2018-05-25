@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: cx_OracleDBATools
+Version: 3.0
+Summary: Tools for managing Oracle databases
+Home-page: http://cx-oradbatools.sourceforge.net
+Author: Anthony Tuininga
+Author-email: anthony.tuininga@gmail.com
+License: UNKNOWN
+Description: Tools for managing Oracle databases
+Platform: UNKNOWN

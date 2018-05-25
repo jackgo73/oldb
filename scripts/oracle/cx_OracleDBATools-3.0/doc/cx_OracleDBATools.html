@@ -1,0 +1,1272 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.6: http://docutils.sourceforge.net/" />
+<title>cx_OracleDBATools</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 5951 2009-05-18 18:03:10Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left{
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: left }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="cx-oracledbatools">
+<h1 class="title">cx_OracleDBATools</h1>
+
+<p>This document covers a cross platform set of tools for performing DBA type
+activities with Oracle databases. These tools have been developed over the past
+number of years and are designed to provide a consistent interface for the DBA
+regardless of the platform on which they are running.</p>
+<p><strong>NOTE:</strong> These tools are a work in progress and are geared for people who are
+reasonably comfortable with Oracle.  This means that while an attempt will be
+made to maintain a stable interface for these tools, changes or extensions will
+be made if there is a valid reason for it.</p>
+<p><strong>NOTE:</strong> These tools must be run on the machine where the database resides.</p>
+<div class="section" id="overview">
+<h1>Overview</h1>
+<div class="section" id="environments">
+<h2>Environments</h2>
+<p>These tools have been known to work in the following environments:</p>
+<dl class="docutils">
+<dt>Oracle Version:</dt>
+<dd><ul class="first last simple">
+<li>Oracle 8i</li>
+<li>Oracle 9i Release 2</li>
+<li>Oracle 10g Release 1</li>
+<li>Oracle 10g Release 2</li>
+<li>Oracle 11g Release 1</li>
+<li>Oracle 11g Release 2</li>
+</ul>
+</dd>
+<dt>Operating Systems:</dt>
+<dd><ul class="first last simple">
+<li>Windows (32-bit and 64-bit)</li>
+<li>Linux (32-bit and 64-bit)</li>
+<li>SunOS 5.8</li>
+<li>Compaq Tru64 v5.1</li>
+<li>HP-UX 11</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="conventions">
+<h2>Conventions</h2>
+<p>In the description of each tool, the following conventions are used for the
+arguments and options:</p>
+<blockquote>
+<ul class="simple">
+<li>Items enclosed in brackets (&quot;[]&quot;) are optional</li>
+<li>If an option is shown without an equals sign (&quot;=&quot;) no value is expected</li>
+<li>If an option is shown with an equals sign (&quot;=&quot;), the equals sign may be
+replaced with a space</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="common-options">
+<h2>Common Options</h2>
+<p>The following options are common to most of the tools:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>name</td>
+<td>description</td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>the name of the configuration file; see <a class="reference internal" href="#configuration">Configuration</a>
+for more information</td>
+</tr>
+<tr><td>-h, --help</td>
+<td>display a brief usage description of the arguments and
+options and stop</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>the name of the file to log messages to or the words
+<tt class="docutils literal">stdout</tt> or <tt class="docutils literal">stderr</tt>; the default is <tt class="docutils literal">stderr</tt></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>the level at which to log messages, one of debug (10),
+info (20), warning (30), error (40) or critical (50);
+the default is <tt class="docutils literal">error</tt></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>the prefix to use for log messages which is a mask
+containing %i (id of the thread logging the message),
+%d (date at which the message was logged), %t (time at
+which the message was logged) or %l (level at which
+the message was logged); the default is <tt class="docutils literal">%t</tt></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>display the program name and version</td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>the sys password for the database; this is not
+required if you are part of the Oracle DBA group</td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>the TNS entry for the database; usually not needed</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>when an error is encountered, display an internal
+traceback stack</td>
+</tr>
+<tr><td>--version</td>
+<td>display the version information and stop</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="configuration">
+<h1>Configuration</h1>
+<p>The tools utilize Oracle's Optimal Flexible Architecture for files. In
+addition, a control file that defines key locations is also utilized.</p>
+<div class="section" id="oraclecontrol-ini">
+<h2>OracleControl.ini</h2>
+<div class="section" id="description">
+<h3>Description</h3>
+<p>This file specifies the location of the Oracle installation and defines how
+databases are created.  The tools will first look at the environment variable
+<tt class="docutils literal">CX_ORACLE_ADMIN</tt> for a fully qualified file name. If this environment
+variable is not set, then <tt class="docutils literal">/etc/oracle/OracleControl.ini</tt> will be used for
+Unix and <tt class="docutils literal"><span class="pre">c:\Oracle\OracleControl.ini</span></tt> will be used for Windows.</p>
+</div>
+<div class="section" id="structure">
+<h3>Structure</h3>
+<p>The file is structured as an INI file with several sections. The first section
+is mandatory and is named <tt class="docutils literal">[General]</tt>. Any other sections contain
+configuration for database types.</p>
+<p>The following options are valid in the <tt class="docutils literal">[General]</tt> section:</p>
+<blockquote>
+<p>BaseDir</p>
+<blockquote>
+This is the base directory for Oracle databases. The directory
+&lt;BaseDir&gt;/admin/&lt;SID&gt;/pfile will contain the parameter file
+(<tt class="docutils literal">init.ora</tt>) and the directory &lt;BaseDir&gt;/admin/&lt;SID&gt;/config will
+contain a file to specify the files and directories used by the
+database (<tt class="docutils literal">disk.cfg</tt>) and on platforms other than Windows, a file to
+specify the environment (<tt class="docutils literal">env.cfg</tt>).</blockquote>
+<p>DefaultType</p>
+<blockquote>
+The name of the section which contains the default database type
+configuration.</blockquote>
+</blockquote>
+<p>The following options are valid in the database type sections:</p>
+<blockquote>
+<p>OracleHome</p>
+<blockquote>
+The value to set the environment variable ORACLE_HOME to when
+interacting with the database.</blockquote>
+<p>TemplateInitOra</p>
+<blockquote>
+This is a template <tt class="docutils literal">init.ora</tt> file. When a database is created this
+file is copied to &lt;BaseDir&gt;/admin/&lt;SID&gt;/pfile/init.ora with the
+substitutions below being performed.</blockquote>
+<p>TemplateDirs</p>
+<blockquote>
+This is a template file. When a database is created this file is used
+to determine which directories need to be created before the database
+is actually created. The substitutions below are performed before
+creating the directories.</blockquote>
+<p>TemplateCreate</p>
+<blockquote>
+This is a template script for creating databases.  When a database is
+created this file is copied to &lt;BaseDir&gt;/admin/&lt;SID&gt;/create/create.sql
+with the substitutions below being performed.</blockquote>
+</blockquote>
+</div>
+<div class="section" id="template-file-location">
+<h3>Template File Location</h3>
+<p>If any of the file names in TemplateInitOra, TemplateDirs, or  TemplateCreate
+are relative, they will be made absolute by prepending the directory where the
+OracleControl.ini file is located.</p>
+</div>
+<div class="section" id="template-substitutions">
+<h3>Template Substitutions</h3>
+<p>The following substitutions are performed when processing the template files:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Search Value</td>
+<td>Replacement Value</td>
+</tr>
+<tr><td>%(SID)s</td>
+<td>the SID of the database being created</td>
+</tr>
+<tr><td>%(BASE_DIR)s</td>
+<td>&lt;BaseDir&gt;</td>
+</tr>
+<tr><td>%(ADMIN_DIR)s</td>
+<td>&lt;BaseDir&gt;/admin/&lt;SID&gt;</td>
+</tr>
+<tr><td>%(ORACLE_HOME)s</td>
+<td>&lt;OracleHome&gt;</td>
+</tr>
+<tr><td>%(SYS_PWD)s</td>
+<td>the sys password supplied on the command line</td>
+</tr>
+</tbody>
+</table>
+<p>In addition, note that user supplied substitutions can be performed as provided
+on the command line.</p>
+<p><strong>NOTE:</strong> any other % that you have in the template file must be doubled.</p>
+</div>
+</div>
+</div>
+<div class="section" id="backup-files">
+<h1>Backup Files</h1>
+<p>The utilties BackupDB and RestoreDB create backup files or directories. The
+type of file created depends on the extension of the file name given to the
+utility. If the extension is not found in this table or the file name does not
+have an extension, a directory with that name will be created instead and all
+of the files will be placed inside that directory.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Extension</td>
+<td>Description</td>
+</tr>
+<tr><td>.tar</td>
+<td>TAR file, uncompressed</td>
+</tr>
+<tr><td>.tar.gz, .tgz</td>
+<td>TAR file, gzip compressed (faster, larger files)</td>
+</tr>
+<tr><td>.tar.bz2, .tbz2</td>
+<td>TAR file, bzip compressed (slower, smaller files)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="backupdb">
+<h1>BackupDB</h1>
+<p>This utility is used to backup an Oracle database. If the database to be backed
+up is not started, it will be started in order to determine the list of files
+that are to be backed up. The database will be left in whatever state it was in
+before the command started.</p>
+<div class="section" id="arguments">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SID</td>
+<td>the SID of the database to backup</td>
+</tr>
+<tr><td>FILENAME</td>
+<td>the name of the file or directory in which to place
+the backed up files (see <a class="reference internal" href="#backup-files">Backup Files</a>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="options">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--no-start</td>
+<td>do not start the database if it is not already
+started</td>
+</tr>
+<tr><td>--offline</td>
+<td>perform an offline backup (the database is shut
+down); this is the only option if the database is not
+in archivelog mode</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="clonedb">
+<h1>CloneDB</h1>
+<p>This utility is used to make a copy of an Oracle database. If the database to
+be cloned is not started, it will be started in order to determine the list of
+files that are to be copied. The database will be left in whatever state it was
+in before the command started.</p>
+<div class="section" id="id1">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>ORIGSID</td>
+<td>the SID of the database to clone</td>
+</tr>
+<tr><td>NEWSID</td>
+<td>the SID of the database to create</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id2">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--no-prompts</td>
+<td>do not issue any prompts and accept all defaults</td>
+</tr>
+<tr><td>--replace-existing</td>
+<td>if a database with <tt class="docutils literal">NEWSID</tt> already exists, it will
+be removed first</td>
+</tr>
+<tr><td>--no-start</td>
+<td>do not start the database if it is not already
+started</td>
+</tr>
+<tr><td>--offline</td>
+<td>perform an offline copy (the database to clone is
+shut down); this is the only option if the database
+to clone is not in archivelog mode</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="createdb">
+<h1>CreateDB</h1>
+<p>This utility is used to create an Oracle database. When this utility is run,
+the following steps are performed:</p>
+<blockquote>
+<ul class="simple">
+<li>the directories mentioned in the directory template file are created</li>
+<li>the parameter file is created based on the parameter template file</li>
+<li>a link to the parameter file is created in &lt;ORACLE_HOME&gt;/dbs (Unix) or
+&lt;ORACLE_HOME&gt;/database (Windows)</li>
+<li>a service is created (Windows only)</li>
+<li>the creation script is run in SQL*Plus</li>
+</ul>
+</blockquote>
+<p><strong>NOTE:</strong> This utility does not update any Oracle networking configuration
+(i.e. listener.ora, tnsnames.ora)</p>
+<div class="section" id="id3">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SID</td>
+<td>the SID of the database to create</td>
+</tr>
+<tr><td>SUBSITUTIONS</td>
+<td>any number of name=value pairs which are used for
+additional substitutions in the template files
+described in the <a class="reference internal" href="#configuration">Configuration</a> section</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id4">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--type=</td>
+<td>the type of database to create; the default value is
+specified in the <a class="reference internal" href="#configuration">Configuration</a> file.</td>
+</tr>
+<tr><td>--start-mode=</td>
+<td>specifies the mode of database startup; valid values
+are <tt class="docutils literal">Manual</tt> and <tt class="docutils literal">Auto</tt>; the default value is
+<tt class="docutils literal">Auto</tt>; this value is used by <a class="reference internal" href="#startdb">StartDB</a> to determine
+which databases to start when the --all-auto option
+is specified</td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>the password to use for the sys account; the default
+value is the name of the machine on which the
+database is being created</td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="exportcontrolfile">
+<h1>ExportControlFile</h1>
+<p>This utility is used to export the control file for the database in the same
+format as the output from the command
+<tt class="docutils literal">alter database backup controlfile to trace;</tt></p>
+<div class="section" id="id5">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SID</td>
+<td>the SID of the database for which to export the
+control file</td>
+</tr>
+<tr><td>[FILENAME]</td>
+<td>the name of the file to which to write the control
+file; if unspecified this will go to stdout</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id6">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="exportparameterfile">
+<h1>ExportParameterFile</h1>
+<p>This utility is used to export the parameter file for the database in the
+format required by Oracle.</p>
+<div class="section" id="id7">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SID</td>
+<td>the SID of the database for which to export the
+parameter file</td>
+</tr>
+<tr><td>[FILENAME]</td>
+<td>the name of the file to which to write the parameter
+file; if unspecified this will go to stdout</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id8">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="removedb">
+<h1>RemoveDB</h1>
+<p>This utility is used to remove one or more Oracle databases from the system.</p>
+<div class="section" id="id9">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SIDS</td>
+<td>the SID(s) of the databases to remove, separated by
+commas</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id10">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--ignore-if-missing</td>
+<td>do not issue an error if the database does not exist
+when attempting to remove it</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="restoredb">
+<h1>RestoreDB</h1>
+<p>This utility is used to restore an Oracle database from a backup file or
+directory created with <a class="reference internal" href="#backupdb">BackupDB</a>.</p>
+<div class="section" id="id11">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>FILENAME</td>
+<td>the name of the file or directory from which to
+restore the database (see <a class="reference internal" href="#backup-files">Backup Files</a>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id12">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--no-prompts</td>
+<td>do not issue any prompts and accept all defaults</td>
+</tr>
+<tr><td>--replace-existing</td>
+<td>if a database with the SID being restored already
+exists, it will be removed first</td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--as-sid=</td>
+<td>restore the database as this SID rather than the one
+specified in the backup file or directory</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="startdb">
+<h1>StartDB</h1>
+<p>This utility is used to start one or more Oracle databases. On Windows the
+Oracle home is determined by looking at the service created for the database.
+On Unix this is determined by looking at the environment configuration file
+(ADMIN_DIR/config/env.cfg). The database is then started using that Oracle
+home.</p>
+<div class="section" id="id13">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SIDS</td>
+<td>the SID(s) of the databases to start, separated by
+commas</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id14">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-r, --restart</td>
+<td>if any of the databases being started is already
+started, shut it down and then start it up again</td>
+</tr>
+<tr><td>--shutdown-mode=</td>
+<td>the mode used to shutdown any databases if the
+--restart option is specified; this must be one of
+<tt class="docutils literal">immediate</tt> or <tt class="docutils literal">abort</tt> with the default being
+<tt class="docutils literal">immediate</tt></td>
+</tr>
+<tr><td>--all</td>
+<td>start all of the databases on this machine; this list
+is determined by looking at the services on Windows
+and by scanning the directories under ADMIN_DIR on
+other platforms</td>
+</tr>
+<tr><td>--all-auto</td>
+<td>this is identical to --all except that only those
+databases configured to start automatically will be
+started</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="stopdb">
+<h1>StopDB</h1>
+<p>This utility is used to stop one or more Oracle databases. On Windows the
+Oracle home is determined by looking at the service created for the database.
+On Unix this is determined by looking at the environment configuration file
+(ADMIN_DIR/config/env.cfg). The database is then stopped using that Oracle
+home.</p>
+<div class="section" id="id15">
+<h2>Arguments</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>SIDS</td>
+<td>the SID(s) of the databases to stop, separated by
+commas</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id16">
+<h2>Options</h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Name</td>
+<td>Description</td>
+</tr>
+<tr><td>-t, --traceback</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--show-banner</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--version</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>-h, --help</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--config-file-name=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--sys-password=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--tnsentry=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--shutdown-mode=</td>
+<td>the mode used to shutdown the databases; this must be
+one of <tt class="docutils literal">immediate</tt> or <tt class="docutils literal">abort</tt> with the default
+being <tt class="docutils literal">immediate</tt></td>
+</tr>
+<tr><td>--all</td>
+<td>stop all of the databases on this machine; this list
+is determined by looking at the services on Windows
+and by scanning the directories under ADMIN_DIR on
+other platforms</td>
+</tr>
+<tr><td>--log-file=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-level=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+<tr><td>--log-prefix=</td>
+<td>see <a class="reference internal" href="#common-options">Common Options</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</body>
+</html>

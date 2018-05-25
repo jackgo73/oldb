@@ -1,0 +1,37 @@
+db_name = %(SID)s
+instance_name = %(SID)s
+service_names = %(SID)s
+
+control_files = (%(ADMIN_DIR)s/ctl_01.ora, %(ADMIN_DIR)s/ctl_02.ora)
+
+background_dump_dest = %(ADMIN_DIR)s/bdump
+user_dump_dest = %(ADMIN_DIR)s/udump
+core_dump_dest = %(ADMIN_DIR)s/cdump
+
+audit_trail = false
+compatible = 10.1.0.0.0
+db_block_size = 2048
+db_file_multiblock_read_count = 32
+db_files = 100
+dml_locks = 500
+fast_start_mttr_target = 300
+global_names = false
+java_pool_size = 0m
+job_queue_processes = 2
+large_pool_size = 8m
+log_buffer = 163840
+log_checkpoint_timeout = 0
+log_checkpoint_interval = 8000
+max_dump_file_size = 10240
+open_cursors = 300
+os_authent_prefix = ""
+pga_aggregate_target = 30M
+query_rewrite_enabled = false
+shared_pool_size = 100M
+sort_area_retained_size = 1048576
+sort_area_size = 1048576
+star_transformation_enabled = false
+timed_statistics = true 
+undo_management = auto
+undo_retention = 10800
+undo_tablespace = undo

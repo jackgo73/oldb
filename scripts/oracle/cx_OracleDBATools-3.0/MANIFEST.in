@@ -1,0 +1,5 @@
+include MANIFEST.in
+include *.py
+include *.txt
+recursive-include templates *.cfg *.ini *.ora *.sql
+recursive-include doc *.html *.rst
