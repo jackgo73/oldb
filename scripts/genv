@@ -104,6 +104,16 @@ ulimit -c unlimited
 handle SIGUSR1 noprint pass
 EOF
 ############################################################
+elif [[ $2 == "gpinit" ]]; then
+############################################################
+cat << EOF
+============================================================
+wget -S https://github.com/greenplum-db/gpdb/archive/5.8.0.tar.gz
+============================================================
+yum -y install rsync coreutils glib2 lrzsz sysstat e4fsprogs xfsprogs ntp readline-devel zlib zlib-devel openssl openssl-devel pam-devel libxml2-devel libxslt-devel python-devel tcl-devel gcc make smartmontools flex bison perl perl-devel perl-ExtUtils* OpenIPMI-tools openldap openldap-devel logrotate python-py gcc-c++ libevent-devel apr-devel libcurl-devel bzip2-devel libyaml-devel  
+============================================================
+EOF
+############################################################
 elif [[ $2 == "pginit" ]]; then
 ############################################################
 cat << EOF
