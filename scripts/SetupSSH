@@ -65,6 +65,7 @@ fi
 
 verify_params()
 {
+echo -- Verify Params --
 if test -z "$hosts"; then
   if test -n "$host_file" && test -f "$host_file"; then
     hosts=`awk '$1 !~ /^#/ { str = str " " $1 } END { print str }' $host_file` 
@@ -99,19 +100,23 @@ echo User is  $user | tee -a $logfile
 
 verify_os()
 {
-  case "$platform" in
-    "Linux")  os=linux;;
-          *)  echo "Sorry, $platform is not currently supported." | tee -a $LOGFILE
-              exit 1;;
-  esac
-  echo "Platform: $platform " | tee -a $LOGFILE
+echo  | tee -a $logfile 
+echo -- Verify OS -- | tee -a $LOGFILE
+case "$platform" in
+  "Linux")  os=linux;;
+        *)  echo "Sorry, $platform is not currently supported." | tee -a $LOGFILE
+            exit 1;;
+esac
+echo "Platform: $platform " | tee -a $LOGFILE
 }
 
 verify_hosts()
 {
-echo Checking if the remote hosts are reachable. | tee -a $LOGFILE
+echo  | tee -a $logfile 
+echo -- Verify Hosts -- | tee -a $LOGFILE
 for host in $hosts; do
-  $PING -c 5 -w 5 $host
+  $PING -c 5 -w 5 $host > /dev/null
+  echo Ping $host done.
   exitcode=`echo $?`
   if [ $exitcode = 0 ]; then
     alivehosts="$alivehosts $host"
@@ -187,28 +192,36 @@ while [ $n -le $nargs ]; do
   n=`expr $n + 1`
 done
 
+# -- verify --
+
 verify_params
 verify_os
 verify_bins
 verify_hosts
 
-echo The script will setup SSH connectivity from the host ''`hostname`'' to all  | tee -a $logfile 
-echo the remote hosts. After the script is executed, the user can use SSH to run | tee -a $logfile 
-echo commands on the remote hosts or copy files between this host ''`hostname`'' | tee -a $logfile 
-echo and the remote hosts without being prompted for passwords or confirmations. | tee -a $logfile 
-echo | tee -a $logfile 
-echo "Do you want to continue and let the script make the above mentioned changes (yes/no)?" | tee -a $logfile 
+# -- setup ssh --
+
+echo SetupSSH will setup SSH connectivity from the local host to all the remote hosts. | tee -a $logfile 
+echo  | tee -a $logfile 
+echo -- User Confirm -- | tee -a $logfile
+echo "Do you want to continue (yes/no)?" | tee -a $logfile 
 
 if [ "$confirm" = "no" ] 
 then 
   read confirm 
 else
-  echo "Confirmation provided on the command line" | tee -a $logfile
+  echo "Confirmation provided on the command line." | tee -a $logfile
 fi 
 
 echo  | tee -a $logfile 
-echo The user chose ''$confirm'' | tee -a $logfile 
+echo The user choose ''$confirm'' | tee -a $logfile 
 
+echo  | tee -a $logfile 
+echo -- Setup SSH -- | tee -a $logfile
 
-
+if [ "$confirm" = "no" ]; then 
+  echo "SSH setup is not done." | tee -a $logfile 
+  exit 1 
+else
+  
 
