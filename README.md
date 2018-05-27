@@ -70,9 +70,23 @@
 
 
 
-## PG ALL IN脚本
+## 脚本
+
+### postgresql
 
 [genv](scripts/genv)
+
+### linux
+
+[SetupSSH](scripts/SetupSSH)
+
+
+
+
+
+
+
+
 
 ## Codeforces
 
