@@ -1,5 +1,122 @@
 #!/bin/sh
+# Gaomingjie - 20180527 
+
+nargs=$#
+n=1
 
 
-NARGS=$#
+# -- bins --
+
+SSH="/usr/bin/ssh"
+SCP="/usr/bin/scp"
+SSH_KEYGEN="/usr/bin/ssh-keygen"
+PING="/bin/ping"
+
+# -- function --
+
+usage()
+{
+cat <<EOF
+$0
+Description: 
+
+Usage: 
+
+Examples:
+
+EOF
+}
+
+verify_bins()
+{
+
+exit 1
+}
+
+handle_params()
+{
+if test -z "$hosts"; then
+  if test -n "$host_file" && test -f "$host_file"; then
+      hosts=`awk '$1 !~ /^#/ { str = str " " $1 } END { print str }' $host_file` 
+  elif ! test -f "$host_file"; then
+     echo "Please specify a valid and existing hosts file."
+  fi
+fi
+
+if  test -z "$hosts" || test -z $user
+then
+echo "Either user name or host information is missing"
+usage
+exit 1
+fi
+
+if [ -d $logfile ]; then
+    echo $logfile is a directory, setting logfile to $logfile/ssh.log
+    logfile=$logfile/ssh.log
+fi
+
+echo The output of this script is also logged into $logfile | tee -a $logfile
+
+if [ `echo $?` != 0 ]; then
+    echo Error writing to the logfile $logfile, Exiting
+    exit 1
+fi
+
+echo Hosts are $hosts | tee -a $logfile
+echo user is  $user | tee -a $logfile
+
+}
+
+# -- entry --
+
+while [ $n -le $nargs ]; do
+  par=$1
+
+  if [ $par = "-help" ]; then
+    usage
+    exit
+  fi
+
+  if [ $par = "-hosts" ] 
+  then
+     hosts=$2
+     shift 1
+     n=`expr $n + 1`
+  fi
+   if [ $j = "-hostfile" ] 
+  then
+     host_file=$2
+     shift 1
+     n=`expr $n + 1`
+   fi
+  if [ $par = "-user" ] 
+  then
+     user=$2
+     shift 1
+     n=`expr $n + 1`
+   fi
+  if [ $par = "-logfile" ] 
+  then
+     logfile=$2
+     shift 1
+     n=`expr $n + 1`
+  fi
+  # shift if no match
+  shift 1
+  n=`expr $n + 1`
+done
+
+handle_params
+
+echo $hosts
+echo $user
+
+
+
+
+
+
+
+
+
 
