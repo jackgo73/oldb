@@ -1,9 +1,10 @@
 #!/bin/sh
 # Gaomingjie - 20180527 
 
-nargs=$#
-n=1
+# -- envs --
 
+TEMP=/tmp
+LOGFILE=$TEMP/SetupSSH_`date +%F-%H-%M-%S`.log
 
 # -- bins --
 
@@ -11,6 +12,17 @@ SSH="/usr/bin/ssh"
 SCP="/usr/bin/scp"
 SSH_KEYGEN="/usr/bin/ssh-keygen"
 PING="/bin/ping"
+
+
+# -- global --
+
+nargs=$#
+n=1
+logfile=$LOGFILE
+
+
+
+
 
 # -- function --
 
@@ -83,7 +95,7 @@ while [ $n -le $nargs ]; do
      shift 1
      n=`expr $n + 1`
   fi
-   if [ $j = "-hostfile" ] 
+   if [ $par = "-hostfile" ] 
   then
      host_file=$2
      shift 1
@@ -107,9 +119,6 @@ while [ $n -le $nargs ]; do
 done
 
 handle_params
-
-echo $hosts
-echo $user
 
 
 
