@@ -12,7 +12,7 @@ nargs=$#
 n=1
 logfile=$LOGFILE
 platform=`uname -s`
-
+confirm=no
 
 
 
@@ -25,7 +25,9 @@ $0
 Description: 
 
 Usage: 
-
+    sshUserSetup.sh  
+        -user <user name> 
+        -hosts \"<space separated hostlist>\" | -hostfile <absolute path of cluster configuration file>
 Examples:
 
 EOF
@@ -36,12 +38,8 @@ verify_bins()
 SSH="/usr/bin/ssh"
 SCP="/usr/bin/scp"
 SSH_KEYGEN="/usr/bin/ssh-keygen"
-if [ $platform = "Linux" ]
-then
-  PING="/bin/ping"
-else
-  PING="/usr/sbin/ping"
-fi
+PING="/bin/ping"
+
 PATH_ERROR=0
 if test ! -x $SSH ; then
   echo "ssh not found at $SSH. Please set the variable SSH_PATH to the correct location of ssh and retry."
@@ -102,14 +100,43 @@ echo User is  $user | tee -a $logfile
 verify_os()
 {
   case "$platform" in
-    "SunOS")  os=solaris;;
     "Linux")  os=linux;;
-    "HP-UX")  os=hpunix;;
-      "AIX")  os=aix;;
           *)  echo "Sorry, $platform is not currently supported." | tee -a $LOGFILE
               exit 1;;
   esac
   echo "Platform: $platform " | tee -a $LOGFILE
+}
+
+verify_hosts()
+{
+echo Checking if the remote hosts are reachable. | tee -a $LOGFILE
+for host in $hosts; do
+  $PING -c 5 -w 5 $host
+  exitcode=`echo $?`
+  if [ $exitcode = 0 ]; then
+    alivehosts="$alivehosts $host"
+  else
+    deadhosts="$deadhosts $host"
+  fi
+done
+
+if test -z "$deadhosts"
+then
+  echo Remote host reachability check succeeded.  | tee -a $LOGFILE
+  echo The following hosts are reachable: $alivehosts.  | tee -a $LOGFILE
+  echo The following hosts are not reachable: $deadhosts.  | tee -a $LOGFILE
+  echo All hosts are reachable. Proceeding further...  | tee -a $LOGFILE
+else
+  echo Remote host reachability check failed.  | tee -a $LOGFILE
+  echo The following hosts are reachable: $alivehosts.  | tee -a $LOGFILE
+  echo The following hosts are not reachable: $deadhosts.  | tee -a $LOGFILE
+  echo Please ensure that all the hosts are up and re-run the script.  | tee -a $LOGFILE
+  echo Exiting now...  | tee -a $LOGFILE
+   exit 1
+fi
+
+numhosts=`echo $hosts | awk '{ }; END {print NF}'`
+echo Hosts number: $numhosts
 }
 
 # -- entry --
@@ -128,24 +155,33 @@ while [ $n -le $nargs ]; do
      shift 1
      n=`expr $n + 1`
   fi
-   if [ $par = "-hostfile" ] 
+
+  if [ $par = "-hostfile" ] 
   then
      host_file=$2
      shift 1
      n=`expr $n + 1`
-   fi
+  fi
+
   if [ $par = "-user" ] 
   then
      user=$2
      shift 1
      n=`expr $n + 1`
-   fi
+  fi
+
   if [ $par = "-logfile" ] 
   then
      logfile=$2
      shift 1
      n=`expr $n + 1`
   fi
+
+  if [ $par = "-confirm" ] 
+  then
+     confirm=yes
+  fi
+
   # shift if no match
   shift 1
   n=`expr $n + 1`
@@ -154,11 +190,24 @@ done
 verify_params
 verify_os
 verify_bins
+verify_hosts
 
+echo The script will setup SSH connectivity from the host ''`hostname`'' to all  | tee -a $logfile 
+echo the remote hosts. After the script is executed, the user can use SSH to run | tee -a $logfile 
+echo commands on the remote hosts or copy files between this host ''`hostname`'' | tee -a $logfile 
+echo and the remote hosts without being prompted for passwords or confirmations. | tee -a $logfile 
+echo | tee -a $logfile 
+echo "Do you want to continue and let the script make the above mentioned changes (yes/no)?" | tee -a $logfile 
 
+if [ "$confirm" = "no" ] 
+then 
+  read confirm 
+else
+  echo "Confirmation provided on the command line" | tee -a $logfile
+fi 
 
-
-
+echo  | tee -a $logfile 
+echo The user chose ''$CONFIRM'' | tee -a $logfile 
 
 
 
