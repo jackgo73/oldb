@@ -6,20 +6,12 @@
 TEMP=/tmp
 LOGFILE=$TEMP/SetupSSH_`date +%F-%H-%M-%S`.log
 
-# -- bins --
-
-SSH="/usr/bin/ssh"
-SCP="/usr/bin/scp"
-SSH_KEYGEN="/usr/bin/ssh-keygen"
-PING="/bin/ping"
-
-
 # -- global --
 
 nargs=$#
 n=1
 logfile=$LOGFILE
-
+platform=`uname -s`
 
 
 
@@ -41,17 +33,45 @@ EOF
 
 verify_bins()
 {
-
-exit 1
+SSH="/usr/bin/ssh"
+SCP="/usr/bin/scp"
+SSH_KEYGEN="/usr/bin/ssh-keygen"
+if [ $platform = "Linux" ]
+then
+  PING="/bin/ping"
+else
+  PING="/usr/sbin/ping"
+fi
+PATH_ERROR=0
+if test ! -x $SSH ; then
+  echo "ssh not found at $SSH. Please set the variable SSH_PATH to the correct location of ssh and retry."
+  PATH_ERROR=1
+fi 
+if test ! -x $SCP ; then
+  echo "scp not found at $SCP. Please set the variable SCP_PATH to the correct location of scp and retry."
+  PATH_ERROR=1
+fi 
+if test ! -x $SSH_KEYGEN ; then
+  echo "ssh-keygen not found at $SSH_KEYGEN. Please set the variable SSH_KEYGEN_PATH to the correct location of ssh-keygen and retry."
+  PATH_ERROR=1
+fi 
+if test ! -x $PING ; then
+  echo "ping not found at $PING. Please set the variable PING_PATH to the correct location of ping and retry."
+  PATH_ERROR=1
+fi 
+if [ $PATH_ERROR = 1 ]; then
+  echo "ERROR: one or more of the required binaries not found, exiting"
+  exit 1
+fi
 }
 
-handle_params()
+verify_params()
 {
 if test -z "$hosts"; then
   if test -n "$host_file" && test -f "$host_file"; then
-      hosts=`awk '$1 !~ /^#/ { str = str " " $1 } END { print str }' $host_file` 
+    hosts=`awk '$1 !~ /^#/ { str = str " " $1 } END { print str }' $host_file` 
   elif ! test -f "$host_file"; then
-     echo "Please specify a valid and existing hosts file."
+    echo "Please specify a valid and existing hosts file."
   fi
 fi
 
@@ -63,20 +83,33 @@ exit 1
 fi
 
 if [ -d $logfile ]; then
-    echo $logfile is a directory, setting logfile to $logfile/ssh.log
-    logfile=$logfile/ssh.log
+  echo $logfile is a directory, setting logfile to $logfile/ssh.log
+  logfile=$logfile/ssh.log
 fi
 
 echo The output of this script is also logged into $logfile | tee -a $logfile
 
 if [ `echo $?` != 0 ]; then
-    echo Error writing to the logfile $logfile, Exiting
-    exit 1
+  echo Error writing to the logfile $logfile, Exiting
+  exit 1
 fi
 
 echo Hosts are $hosts | tee -a $logfile
-echo user is  $user | tee -a $logfile
+echo User is  $user | tee -a $logfile
 
+}
+
+verify_os()
+{
+  case "$platform" in
+    "SunOS")  os=solaris;;
+    "Linux")  os=linux;;
+    "HP-UX")  os=hpunix;;
+      "AIX")  os=aix;;
+          *)  echo "Sorry, $platform is not currently supported." | tee -a $LOGFILE
+              exit 1;;
+  esac
+  echo "Platform: $platform " | tee -a $LOGFILE
 }
 
 # -- entry --
@@ -118,9 +151,9 @@ while [ $n -le $nargs ]; do
   n=`expr $n + 1`
 done
 
-handle_params
-
-
+verify_params
+verify_os
+verify_bins
 
 
 
