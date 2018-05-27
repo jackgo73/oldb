@@ -223,5 +223,5 @@ if [ "$confirm" = "no" ]; then
   echo "SSH setup is not done." | tee -a $logfile 
   exit 1 
 else
-  
+  exit
 
