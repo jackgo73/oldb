@@ -207,7 +207,8 @@ else
 fi 
 
 echo  | tee -a $logfile 
-echo The user chose ''$CONFIRM'' | tee -a $logfile 
+echo The user chose ''$confirm'' | tee -a $logfile 
+
 
 
 
