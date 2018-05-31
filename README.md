@@ -48,6 +48,11 @@
 
 [《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
 
+
+### greenplum
+
+xxx
+
 ### oracle
 
 [《oracle12c安装记录》](src/orcl-deploy-12c.md)
