@@ -1,4 +1,4 @@
-# note
+# block chain note
 
 ## 钱包
 
@@ -94,8 +94,6 @@ http://miner.tools/tools/index/displaycard
 （收入）计算难度——算力下降（矿工增加、硬件升级、官方调控）
 
 （支出）显卡价格崩盘，目前入手RX580 8G在2000RMB左右
-
-（支出）电费上涨
 
 
 
