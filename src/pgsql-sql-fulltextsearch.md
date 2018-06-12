@@ -1,4 +1,4 @@
-# postgresql全文搜索
+#  postgresql全文搜索
 
 > gaomingjie
 >
@@ -200,3 +200,113 @@ SELECT phraseto_tsquery('the cats ate the rats');
 
 ---
 
+### 配置 
+
+- 前述的都是简单的文本搜索例子。正如前面所提到的，全文搜索功能包括做更多事情的能力：跳过索引特定词（停用词）、处理同义词并使用更高级的解析，例如基于空白之外的解析。这个功能由文本搜索配置控制PostgreSQL中有多种语言的预定义配置，并且你可以很容易地创建你自己的配置（psql的\dF命令显示所有可用的配置）。 
+- 在 安 装 期 间 一 个 合 适 的 配 置 将 被 选 择 并 且default_text_search_config也 被 相 应 地 设 置在postgresql.conf中。如果你正在对整个集簇使用相同的文本搜索配置，你可以使用在postgresql.conf中使用该值。要在集簇中使用不同的配置但是在任何一个数据库内部使用同一种配置，使用ALTER DATABASE ... SET。否则，你可以在每个会话中设置default_text_search_config。 
+- 依赖一个配置的每一个文本搜索函数都有一个可选的regconfig参数，因此要使用的配置可以被显式指定。只有当这个参数被忽略时，default_text_search_config才被使用。为了让建立自定义文本搜索配置更容易，一个配置可以从更简单的数据库对象来建立。PostgreSQL的文本搜索功能提供了四类配置相关的数据库对象： 
+  - 文本搜索解析器将文档拆分成记号并分类每个记号（例如，作为词或者数字）
+  - 文本搜索词典将记号转变成正规化的形式并拒绝停用词。
+  - 文本搜索模板提供位于词典底层的函数（一个词典简单地指定一个模板和一组用于模板的参数）
+  - 文本搜索配置选择一个解析器和一组用于将解析器产生的记号正规化的词典。 
+
+
+- 文本搜索解析器和模板是从低层 C 函数构建而来，因此它要求 C 编程能力来开发新的解析器和模板，并且还需要超级用户权限来把它们安装到一个数据库中（在PostgreSQL发布的contrib/区域中有一些附加的解析器和模板的例子）。由于词典和配置只是对底层解析器和模板的参数化和连接，不需要特殊的权限来创建一个新词典或配置。创建定制词典和配置的例子将在本章稍后的部分给 
+
+---
+
+**我来理解一下**
+
+- 全文搜索还有其他的能力：跳过索引特定词（停用词）、处理同义词并使用更高级的解析，例如基于空白之外的解析等等
+
+- 安装的默认参数是英语语法，使用ALTER DATABASE ... SET修改。
+
+  ```sql
+  postgres=# show default_text_search_config;
+   default_text_search_config 
+  ----------------------------
+   pg_catalog.english
+  (1 row)
+  ```
+
+---
+
+## 表和索引 
+
+在前一节中的例子演示了使用简单常数字符串进行全文匹配。本节展示如何搜索表数据，以及可选择地使用索引。 
+
+### 搜索一个表 
+
+---
+
+**按照文档构造数据操作一遍**
+
+```sql
+create table pgweb (id int primary key, title text, body text, last_mod_date date);
+
+insert into pgweb values (1, 'Tag', 'A small group of former classmates organize an elaborate, annual game of tag that requires some to travel all over the country.', '2018-06-01');
+insert into pgweb values (2, 'Gotti', 'The story of crime boss John Gotti and his son.', '2018-06-02');
+insert into pgweb values (3, 'Race 3', 'Revolves around a family that deals in borderline crime; ruthless and vindictive to the core.', '2018-06-04');
+insert into pgweb values (4, 'SuperFly', $$The movie is a remake of the 1972 blaxploitation film 'Super Fly'.$$, '2018-06-04');
+insert into pgweb values (5, 'Incredibles 2', 'Bob Parr (Mr. Incredible) is left to care for Jack-Jack while Helen (Elastigirl) is out saving the world.', '2018-06-05');
+
+insert into pgweb values (6, 'Friends1', 'xxx aaa friend friends friendly.', '2018-06-07');
+insert into pgweb values (7, 'Friends2', 'xxx aaa friends.', '2018-06-07');
+insert into pgweb values (8, 'Friends3', 'xxx aaa friendly.', '2018-06-08');
+```
+
+可以在没有一个索引的情况下做一次全文搜索。一个简单的查询将打印每一个行的title，这些行在其body域中包含词friend： 
+
+```sql
+postgres=# SELECT title FROM pgweb WHERE to_tsvector('english', body) @@ to_tsquery('english', 'friend');
+  title   
+----------
+ Friends1
+ Friends2
+ Friends3
+(3 rows)
+```
+
+这将还会找到相关的词例如friends和friendly，因为这些都被约减到同一个正规化的词位。以上的查询指定要使用english配置来解析和正规化字符串。我们也可以忽略配置参数，这个查询将使用由default_text_search_config设置的配置。 
+
+```sql
+postgres=# SELECT title FROM pgweb WHERE to_tsvector(body) @@ to_tsquery('friend');
+  title   
+----------
+ Friends1
+ Friends2
+ Friends3
+(3 rows)
+```
+
+一 个 更 复 杂 的 例 子 要 求 它 们 在title或body中 包含create和table 
+
+```sql
+postgres=# SELECT title FROM pgweb WHERE to_tsvector(title || ' ' || body) @@ to_tsquery('tag & country');
+ title 
+-------
+ Tag
+(1 row)
+```
+
+为了清晰，我们忽略coalesce函数调用，它可能需要被用来查找在这两个域之中包含NULL的行。
+尽管这些查询可以在没有索引的情况下工作，大部分应用会发现这种方法太慢了，除了偶尔的临时搜索。实际使用文本搜索通常要求创建一个索引。 
+
+---
+
+### 创建索引 
+
+------
+
+**按照文档构造数据操作一遍**
+
+我们可以创建一个GIN索引（Section 12.9）来加速文本搜索：
+
+```sql
+postgres=# CREATE INDEX pgweb_idx ON pgweb USING GIN(to_tsvector('english', body)); 
+CREATE INDEX
+```
+
+
+
+（未完）
