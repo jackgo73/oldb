@@ -92,4 +92,33 @@ f
 
 
 
-回家接着写。。。
+正如以上例子所建议的，一个tsquery并不只是一个未经处理的文本，顶多一个tsvector是这样。一个tsquery包含搜索术语，它们必须是已经正规化的词位，并且可以使用 AND、OR、NOT 以及 FOLLOWED BY 操作符结合多个术语（详见Section 8.11.2）。有几 个 函 数to_tsquery、plainto_tsquery以 及phraseto_tsquery可 用 于 将 用 户 书 写 的文本转换为正确的tsquery，它们会主要采用正则化出现在文本中的词的方法。相似地，to_tsvector被用来解析和正规化一个文档字符串。因此在实际上一个文本搜索匹配可能看起来更像： 
+
+```sql
+SELECT to_tsvector('fat cats ate fat rats') @@ to_tsquery('fat & rat');
+?column?
+----------
+t
+```
+
+注意如果这个匹配被写成下面这样它将不会成功： 
+
+```sql
+SELECT 'fat cats ate fat rats'::tsvector @@ to_tsquery('fat & rat');
+?column?
+----------
+f
+```
+
+因为这里不会发生词rats的正规化。一个tsvector的元素是词位，它被假定为已经正规化好，因此rats不匹配rat 
+
+---
+
+**我来理解一下**
+
+- ::tsvector直接转换成文本向量，这个强制转换的东西假定已经正规化了，存的是词位。
+- to_tsvector函数将文本正规化处理成词位。
+
+---
+
+@@操 作 符 也 支 持text输 出 ， 它 允 许 在 简 单 情 况 下 跳 过 从 文 本 字 符 串到tsvector或tsquery的显式转换。可用的变体是： 
