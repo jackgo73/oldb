@@ -32,8 +32,6 @@
 
 #### SQL引擎
 
-[《Postgresql 执行计划&索引相关》](src/pgsql-fun-explain.md)
-
 [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
 [《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
@@ -41,6 +39,10 @@
 [《postgresql全文搜索》](src/pgsql-sql-fulltextsearch.md)
 
 [《LT && SQL总结》](src/sql-exec-leetcode.md)
+
+
+
+[《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
 
 #### 经验技巧
 
