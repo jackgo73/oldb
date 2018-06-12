@@ -122,3 +122,81 @@ f
 ---
 
 @@操 作 符 也 支 持text输 出 ， 它 允 许 在 简 单 情 况 下 跳 过 从 文 本 字 符 串到tsvector或tsquery的显式转换。可用的变体是： 
+
+```sql
+tsvector @@ tsquery
+tsquery @@ tsvector
+text @@ tsquery
+text @@ text
+```
+
+前两种我们已经见过。形式text @@ tsquery等价于to_tsvector(x) @@ y。形式text @@ text等价于to_tsvector(x) @@ plainto_tsquery(y)。 
+
+在tsquery中，&（AND）操作符指定它的两个参数都必须出现在文档中才表示匹配。类似地，|（OR）操作符指定至少一个参数必须出现，而!（NOT）操作符指定它的参数不出现才能匹配。
+
+在<->（FOLLOWED BY） tsquery操作符的帮助下搜索可能的短语，只有该操作符的参数的匹配是**相邻**的并且符合给定**顺序**时，该操作符才算是匹配。例如： 
+
+```sql
+SELECT to_tsvector('fatal error') @@ to_tsquery('fatal <-> error');
+?column?
+----------
+t
+
+SELECT to_tsvector('fatal error') @@ to_tsquery('error <-> fatal');
+ ?column? 
+----------
+ f
+(1 row)
+
+SELECT to_tsvector('error is not fatal') @@ to_tsquery('fatal <-> error');
+?column?
+----------
+f
+```
+
+FOLLOWED BY 操作符还有一种更一般的版本，形式是\<N>，其中N是一个表示匹配词位位置之间的差\<1>和<->相同，而\<2>允许刚好一个其他词位出现在匹配之间，以此类推。当有些词是停用词时，phraseto_tsquery函数利用这个操作符来构造一个能够匹配多词短语的tsquery。例如： 
+
+```sql
+SELECT phraseto_tsquery('cats ate rats');
+     phraseto_tsquery      
+---------------------------
+ 'cat' <-> 'ate' <-> 'rat'
+(1 row)
+
+SELECT phraseto_tsquery('the cats ate the rats');
+     phraseto_tsquery      
+---------------------------
+ 'cat' <-> 'ate' <2> 'rat'
+(1 row)
+```
+
+一种有时候有用的特殊情况是，\<0>可以被用来要求两个匹配同一个词的模式。圆括号可以被用来控制tsquery操作符的嵌套。如果没有圆括号，|的计算优先级最低，然后从低到高依次是&、<->、!。 
+
+---
+
+**我来理解一下**
+
+- 形式需要记住：转换函数（原始文本） @@ 查询函数（查询条件）
+
+- 注意：转换函数（原始文本）== 词位
+
+- 查询条件里面这里给出了三种： &  |  <-> 其中第三种需要相邻且符合给定顺序。
+
+- <->就是FOLLOW BY操作符。变种可以是 \<N>，见下面例子
+
+  ```sql
+  SELECT to_tsvector('error is not fatal') @@ to_tsquery('error <-> fatal');
+   ?column? 
+  ----------
+   f
+  (1 row)
+
+  SELECT to_tsvector('error is not fatal') @@ to_tsquery('error <3> fatal');
+   ?column? 
+  ----------
+   t
+  (1 row)
+  ```
+
+---
+
