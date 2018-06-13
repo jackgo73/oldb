@@ -8,7 +8,7 @@
 
 ## 背景
 
-根据手册内容总结实践full text search。文档总结笔记在每一节的**“我来理解一下”**。
+根据手册内容总结实践full text search。手册内容穿插笔记和实践（标记：>>>笔记<<<）。
 
 ## 介绍
 
@@ -36,7 +36,7 @@
 
 ---
 
-**我来理解一下**
+**>>>我来理解一下<<<**
 
 - 全文搜索是预处理了一下之后产生了一个索引
 - 预处理先把文档做分词，然后给每个词都做记号，然后把记号转成词位，词位是标准化的记号。（例如同一个词的不同形式的记号相同）pg有词典来做这个事情。
@@ -68,7 +68,7 @@
 
 ---
 
-**我来理解一下**
+**>>>我来理解一下<<<**
 
 - 全文搜索的原始文本最好存在数据库里面
 - 文档都会被预处理成tsvector的格式，内部处理都是用的这个数据结构，之后最终显示的时候再检索原始文本。
@@ -114,7 +114,7 @@ f
 
 ---
 
-**我来理解一下**
+**>>>我来理解一下<<<**
 
 - ::tsvector直接转换成文本向量，这个强制转换的东西假定已经正规化了，存的是词位。
 - to_tsvector函数将文本正规化处理成词位。
@@ -174,7 +174,7 @@ SELECT phraseto_tsquery('the cats ate the rats');
 
 ---
 
-**我来理解一下**
+**>>>我来理解一下<<<**
 
 - 形式需要记住：转换函数（原始文本） @@ 查询函数（查询条件）
 
@@ -215,7 +215,7 @@ SELECT phraseto_tsquery('the cats ate the rats');
 
 ---
 
-**我来理解一下**
+**>>>我来理解一下<<<**
 
 - 全文搜索还有其他的能力：跳过索引特定词（停用词）、处理同义词并使用更高级的解析，例如基于空白之外的解析等等
 
@@ -239,7 +239,7 @@ SELECT phraseto_tsquery('the cats ate the rats');
 
 ---
 
-**按照文档构造数据操作一遍**
+**>>>按照文档构造数据操作一遍<<<**
 
 ```sql
 create table pgweb (id int primary key, title text, body text, last_mod_date date);
@@ -298,7 +298,7 @@ postgres=# SELECT title FROM pgweb WHERE to_tsvector(title || ' ' || body) @@ to
 
 ------
 
-**按照文档构造数据操作一遍**
+**>>>按照文档构造数据操作<<<**
 
 我们可以创建一个GIN索引（Section 12.9）来加速文本搜索：
 
@@ -307,6 +307,87 @@ postgres=# CREATE INDEX pgweb_idx ON pgweb USING GIN(to_tsvector('english', body
 CREATE INDEX
 ```
 
+**注意**必须使用双参数版本的to_tsvector才能走索引，即WHERE to_tsvector(’english’,body) @@ ’a & b’ 可以使用该索引，但WHERE to_tsvector(body) @@ ’a & b’不能 。
 
 
-（未完）
+
+另 一 种 方 法 是 创 建 一 个 单 独 的tsvector列 来 保 存to_tsvector的 输 出 。 这 个 例 子是title和body的连接，使用coalesce来保证当其他域为NULL时一个域仍然能留在索引中：
+
+```sql
+ALTER TABLE pgweb ADD COLUMN textsearchable_index_col tsvector;
+UPDATE pgweb SET textsearchable_index_col = to_tsvector('english', coalesce(title,'') || ' ' || coalesce(body,''));
+```
+
+ ps.看看to_tsvector后是什么样子
+
+```sql
+postgres=# select body, to_tsvector('english', body) from pgweb;
+-[ RECORD 1 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | The story of crime boss John Gotti and his son.
+to_tsvector | 'boss':5 'crime':4 'gotti':7 'john':6 'son':10 'stori':2
+-[ RECORD 2 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | Revolves around a family that deals in borderline crime; ruthless and vindictive to the core.
+to_tsvector | 'around':2 'borderlin':8 'core':15 'crime':9 'deal':6 'famili':4 'revolv':1 'ruthless':10 'vindict':12
+-[ RECORD 3 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | The movie is a remake of the 1972 blaxploitation film 'Super Fly'.
+to_tsvector | '1972':8 'blaxploit':9 'film':10 'fli':12 'movi':2 'remak':5 'super':11
+-[ RECORD 4 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | Bob Parr (Mr. Incredible) is left to care for Jack-Jack while Helen (Elastigirl) is out saving the world.
+to_tsvector | 'bob':1 'care':8 'elastigirl':15 'helen':14 'incred':4 'jack':11,12 'jack-jack':10 'left':6 'mr':3 'parr':2 'save':18 'world':20
+-[ RECORD 5 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | A small group of former classmates organize an elaborate, annual game of tag that requires some to travel all over the country.
+to_tsvector | 'annual':10 'classmat':6 'countri':22 'elabor':9 'former':5 'game':11 'group':3 'organ':7 'requir':15 'small':2 'tag':13 'travel':18
+-[ RECORD 6 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | xxx aaa friend friends friendly.
+to_tsvector | 'aaa':2 'friend':3,4,5 'xxx':1
+-[ RECORD 7 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | xxx aaa friends.
+to_tsvector | 'aaa':2 'friend':3 'xxx':1
+-[ RECORD 8 ]-------------------------------------------------------------------------------------------------------------------------------------
+body        | xxx aaa friendly.
+to_tsvector | 'aaa':2 'friend':3 'xxx':1
+```
+
+然后我们创建一个GIN索引来加速搜索： 
+
+```sql
+CREATE INDEX textsearch_idx ON pgweb USING GIN(textsearchable_index_col);
+```
+
+现在我们准备好执行一个快速的全文搜索了，数据量太小了，强制走一下索引。
+
+```sql
+SELECT title
+FROM pgweb
+WHERE textsearchable_index_col @@ to_tsquery('classmat & travel')
+ORDER BY last_mod_date DESC
+LIMIT 10;
+
+explain (analyze,VERBOSE,COSTS) SELECT title
+FROM pgweb
+WHERE textsearchable_index_col @@ to_tsquery('classmat & travel')
+ORDER BY last_mod_date DESC
+LIMIT 10;
+                                                             QUERY PLAN                                                             
+------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=16.52..16.53 rows=1 width=36) (actual time=0.097..0.098 rows=1 loops=1)
+   Output: title, last_mod_date
+   ->  Sort  (cost=16.52..16.53 rows=1 width=36) (actual time=0.095..0.096 rows=1 loops=1)
+         Output: title, last_mod_date
+         Sort Key: pgweb.last_mod_date DESC
+         Sort Method: quicksort  Memory: 25kB
+         ->  Bitmap Heap Scan on public.pgweb  (cost=12.25..16.51 rows=1 width=36) (actual time=0.082..0.083 rows=1 loops=1)
+               Output: title, last_mod_date
+               Recheck Cond: (pgweb.textsearchable_index_col @@ to_tsquery('classmat & travel'::text))
+               Heap Blocks: exact=1
+               ->  Bitmap Index Scan on textsearch_idx  (cost=0.00..12.25 rows=1 width=0) (actual time=0.069..0.069 rows=1 loops=1)
+                     Index Cond: (pgweb.textsearchable_index_col @@ to_tsquery('classmat & travel'::text))
+ Planning time: 0.288 ms
+ Execution time: 0.236 ms
+(14 rows)
+```
+
+在使用一个单独的列来存储tsvector表示时，有必要创建一个触发器在title或body改变时保证tsvector列为当前值。Section 12.4.3解释了怎样去做。单独列方法相对于表达式索引的一个优势在于，它不必为了利用索引而在查询中显式地指定文本搜索配置。如上述例子所示，查询可以依赖default_text_search_config。另一个优势是搜索将会更快，因为它不必重做to_tsvector调用来验证索引匹配（在使用 GiST 索引时这一点比使用 GIN 索引时更重要；见Section 12.9）。表达式索引方法更容易建立，但是它要求更少的磁盘空间，因为tsvector表示没有被显式地存储下来。 
+
+## 空值文本搜索
+
