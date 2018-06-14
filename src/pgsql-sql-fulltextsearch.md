@@ -496,3 +496,121 @@ SELECT COALESCE(description, short_description, ’(none)’) ...
 
 ### 解析查询 
 
+#### to_tsquery
+
+PostgreSQL提 供 了 函 数`to_tsquery`、`plainto_tsquery`和`phraseto_tsquery`用来 把 一 个 查 询 转 换 成tsquery数 据 类 型 。
+
+to_tsquery提 供 了比plainto_tsquery和phraseto_tsquery更多的特性，但是它对其输入要求更加严格。
+
+`to_tsquery([ config regconfig, ] querytext text) returns tsquery`
+
+to_tsquery从querytext创 建 一 个tsquery值 ， 该 值 由 被tsquery操 作符`&（AND）、|（OR）、!（NOT）和<->（FOLLOWED BY）`分隔的单个记号组成。 这些操作符可以使用圆括号分组。换句话说，to_tsquery的输入必须已经遵循tsquery输入的一般规则，如Section 8.11.2所述。区别在于基本的tsquery输入把记号当作表面值， 而to_tsquery 会使用指定的或者默认的配置把每一个记号正规化成一个词位，并且丢弃掉任何根据配置是停用词的记号。例如： 
+
+```sql
+postgres=# SELECT to_tsquery('english', 'The & Fat & Rats');
+  to_tsquery   
+---------------
+ 'fat' & 'rat'
+(1 row)
+```
+
+和在基本tsquery输入中一样，权重可以被附加到每一个词位来限制它只匹配属于那些权重的tsvector词位。例如： 
+
+```sql
+postgres=# SELECT to_tsquery('english', 'Fat | Rats:AB');
+    to_tsquery    
+------------------
+ 'fat' | 'rat':AB
+(1 row
+```
+
+同样，*可以被附加到一个词位来指定前缀匹配：
+
+```sql
+postgres=# SELECT to_tsquery('supern:*A & star:A*B');
+        to_tsquery        
+--------------------------
+ 'supern':*A & 'star':*AB
+(1 row)
+```
+
+这样一个词位将匹配一个tsvector中的任意以给定字符串开头的词。
+
+**>>>>不太理解<<<<**
+
+**to_tsquery也能够接受单引号短语。当配置包括一个会在这种短语上触发的分类词典时就是它的主要用处。在下面的例子中，一个分类词典含规则supernovae stars : sn：** 
+
+**>>>>不太理解<<<<**
+
+```sql
+postgres=# SELECT to_tsquery('''supernovae stars'' & !crab');
+           to_tsquery           
+--------------------------------
+ 'supernova' & 'star' & !'crab'
+(1 row)
+```
+
+在没有引号时，to_tsquery将为那些没有被 AND、OR 或者 FOLLOWED BY 操作符分隔记号产生一个语法错误。 
+
+
+
+#### plainto_tsquery 
+
+`plainto_tsquery([ config regconfig, ] querytext text) returns tsquery `
+
+plainto_tsquery将未格式化的文本querytext转换成一个tsquery值。该文本被解析并被正规化，很像to_tsvector，然后&（AND）布尔操作符被插入到留下来的词之间。
+例子： 
+
+```sql
+postgres=# SELECT plainto_tsquery('english', 'The Fat Rats');
+ plainto_tsquery 
+-----------------
+ 'fat' & 'rat'
+(1 row)
+```
+
+注意plainto_tsquery不会识其输入中的tsquery操作符、权重标签或前缀匹配标签： 
+
+```sql
+postgres=# SELECT plainto_tsquery('english', 'The Fat & Rats:C');
+   plainto_tsquery   
+---------------------
+ 'fat' & 'rat' & 'c'
+(1 row)
+```
+
+这里，所有输入的标点都被作为空间符号并且丢弃。
+
+
+
+#### phraseto_tsquery
+
+`phraseto_tsquery([ config regconfig, ] querytext text) returns tsquery `
+
+phraseto_tsquery的 行 为 很 像plainto_tsquery。
+
+不 过 前 者 会 在 留 下 来 的 词 之 间 插入`<->（FOLLOWED BY）`操作符而不是`&（AND）`操作符。还有，停用词也不是简单地丢弃掉，而是通过插入`<N>`操作符`（而不是<->操作符）`来解释。在搜索准确的词位序列时这个函数很有用，因为 FOLLOWED BY 操作符不只是检查所有词位的存在性，还会检查词位的顺序。
+例子： 
+
+```sql
+postgres=# SELECT phraseto_tsquery('english', 'The Fat Rats');
+ phraseto_tsquery 
+------------------
+ 'fat' <-> 'rat'
+(1 row)
+```
+
+和plainto_tsquery相似，phraseto_tsquery函数不会识别其输入中的tsquery操作符、权重标签或者前缀匹配标签： 
+
+```sql
+postgres=# SELECT phraseto_tsquery('english', 'The Fat & Rats:C');
+    phraseto_tsquery     
+-------------------------
+ 'fat' <-> 'rat' <-> 'c'
+(1 row)
+```
+
+
+
+### 排名搜索结果 
+
