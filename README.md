@@ -16,7 +16,7 @@
 
 #### 存储引擎
 
-[《Postgresql并发控制总结实践》](src/pgsql-kp-concurrency.md)
+**[《Postgresql并发控制总结实践》](src/pgsql-kp-concurrency.md)
 
 [《两阶段提交》](src/pgsql-kp-twophase.md)
 
