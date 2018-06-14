@@ -87,7 +87,7 @@ postgres=# select * from t1;
 
 幻读、不可重复读 >>> 发生了...
 
-```
+```sql
 begin;                                           begin;
 select * from t1 where i = 1;                    
  i                                               
@@ -116,3 +116,42 @@ MVCC保证了读、写不阻塞，所以这里不涉及锁。
 
 ### 写写冲突
 
+**[session1]事务号682**
+
+**[session2]事务号683**
+
+
+
+**[session1]**
+
+```sql
+begin;
+```
+
+![](images/pgsql-kp-concurrency-0.png)
+
+**[session2]**
+
+```sql
+begin;
+```
+
+![](images/pgsql-kp-concurrency-1.png)
+
+**[session1]**
+
+```sql
+update t1 set i=20 where i=2;
+UPDATE 1
+```
+
+![](images/pgsql-kp-concurrency-2.png)
+
+**[session2]**
+
+```sql
+postgres=# update t1 set i=20 where i=2;
+-- 阻塞
+```
+
+![](images/pgsql-kp-concurrency-3.png)
