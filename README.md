@@ -4,7 +4,15 @@
 
 ### postgresql
 
+#### SQL引擎
 
+[《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
+
+** [《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
+
+** [《postgresql全文搜索》](src/pgsql-sql-fulltextsearch.md)
+
+[《LT && SQL总结》](src/sql-exec-leetcode.md)
 
 #### 存储引擎
 
@@ -29,20 +37,6 @@
 [《几种HA部署方式》](src/pgsql-fun-ha.md)
 
 [《安装PostgresXL》](src/pgsql-deploy-xl.md)
-
-#### SQL引擎
-
-[《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
-
-[《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
-
-[《postgresql全文搜索》](src/pgsql-sql-fulltextsearch.md)
-
-[《LT && SQL总结》](src/sql-exec-leetcode.md)
-
-
-
-[《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
 
 #### 经验技巧
 
@@ -76,6 +70,8 @@ xxx
 [《Google Style Guides-Shell Style Guide(翻译)》](src/shell-style.md)
 
 
+
+[《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
 
 ## 脚本
 

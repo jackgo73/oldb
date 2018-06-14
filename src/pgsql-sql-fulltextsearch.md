@@ -391,3 +391,108 @@ LIMIT 10;
 
 ## 空值文本搜索
 
+要实现全文搜索必须要有一个从文档创建tsvector以及从用户查询创建tsquery的函数。而且我们需要一种有用的顺序返回结果，因此我们需要一个函数能够根据文档与查询的相关性比较文档。还有一点重要的是要能够很好地显示结果。PostgreSQL对所有这些函数都提供了支持。 
+
+### 解析文档 
+
+PostgreSQL提供了函数to_tsvector将一个文档转换成tsvector数据类型。
+
+`to_tsvector([ config regconfig, ] document text) returns tsvector `
+
+
+
+to_tsvector把一个文本文档解析成记号，把记号缩减成词位，并且返回一个tsvector，它列出了词位以及词位在文档中的位置。文档被根据指定的或默认的文本搜索配置来处理。下面是一个简单例子： 
+
+```sql
+postgres=# SELECT to_tsvector('english', 'a fat cat sat on a mat - it ate a fat rats');
+                     to_tsvector                     
+-----------------------------------------------------
+ 'ate':9 'cat':3 'fat':2,11 'mat':7 'rat':12 'sat':4
+(1 row)
+```
+
+- 在上面这个例子中我们看到，作为结果的tsvector不包含词a、on或it，词rats变成了rat，并且标点符号-被忽略了。 
+- to_tsvector函数在内部调用了一个解析器，它把文档文本分解成记号并且为每一种记号分配一个类型。对于每一个记号，会去查询一个词典列表（Section 12.6），该列表会根据记号的类型而变化。第一个识别记号的词典产生一个或多个正规化的词位来表示该记号。例如，rats变成rat是因为一个词典识别到该词rats是rat的复数形式。
+- 一些词会被识别为停用词（Section 12.6.1），这将导致它们被忽略，因为它们出现得太频繁以至于在搜索中起不到作用。在我们的例子中有a、on和it是停用词。如果在列表中没有词典能识别该记号，那它将也会被忽略。在这个例子中标点符号-就属于这种情况，因为事实上没有词典会给它分配记号类型（空间符号），即空间记号不会被索引。
+- 对于解析器、词典以及要索引哪些记号类型是由所选择的文本搜索配置（Section 12.7）决定的。可以在同一个数据库中有多种不同的配置，并且有用于很多种语言的预定义配置。在我们的例子中，我们使用用于英语的默认配置english。 
+
+函数setweight可以被用来对tsvector中的项标注一个给定的权重，这里一个权重可以是四个字母之一：A、B、C或D。这通常被用来标记来自文档不同部分的项，例如标题对正文。稍后，这种信息可以被用来排名搜索结果。
+因 为to_tsvector(NULL) 将 返 回NULL， 不 论 何 时 一 个 域 可 能 为 空 时 ， 我 们 推 荐 使用coalesce。下面是我们推荐的从一个结构化文档创建一个tsvector的方法： 
+
+```
+UPDATE tt SET ti =
+setweight(to_tsvector(coalesce(title,”)), ’A’) ||
+setweight(to_tsvector(coalesce(keyword,”)), ’B’) ||
+setweight(to_tsvector(coalesce(abstract,”)), ’C’) ||
+setweight(to_tsvector(coalesce(body,”)), ’D’);
+```
+
+这里我们已经使用了setweight在完成的tsvector标注每一个词位的来源，并且接着将标注过的tsvector值用tsvector连接操作符||合并在一起（Section 12.4.1给出了关于这些操作符的细节）。 
+
+---
+
+**>>>>理解一下<<<<**
+
+- 首先需要理解的是to_tsvector函数输出的形式，里面类似字典，存储的是标准化之后关键字的出现位置。
+
+- 这个setweight不太好理解，就用上面构造的电影数据，下面实验一下
+
+  ```sql
+  postgres=# select title, body from pgweb ;
+       title     |                                                              body                                                               
+  ---------------+---------------------------------------------------------------------------------------------------------------------------------
+   Gotti         | The story of crime boss John Gotti and his son.
+   Race 3        | Revolves around a family that deals in borderline crime; ruthless and vindictive to the core.
+   SuperFly      | The movie is a remake of the 1972 blaxploitation film 'Super Fly'.
+   Incredibles 2 | Bob Parr (Mr. Incredible) is left to care for Jack-Jack while Helen (Elastigirl) is out saving the world.
+   Tag           | A small group of former classmates organize an elaborate, annual game of tag that requires some to travel all over the country.
+   Friends1      | xxx aaa friend friends friendly.
+   Friends2      | xxx aaa friends.
+   Friends3      | xxx aaa friendly.
+  (8 rows)
+
+  postgres=# select to_tsvector(title), to_tsvector(body) from pgweb ;
+     to_tsvector    |                                                             to_tsvector                                                              
+  ------------------+--------------------------------------------------------------------------------------------------------------------------------------
+   'gotti':1        | 'boss':5 'crime':4 'gotti':7 'john':6 'son':10 'stori':2
+   '3':2 'race':1   | 'around':2 'borderlin':8 'core':15 'crime':9 'deal':6 'famili':4 'revolv':1 'ruthless':10 'vindict':12
+   'superfli':1     | '1972':8 'blaxploit':9 'film':10 'fli':12 'movi':2 'remak':5 'super':11
+   '2':2 'incred':1 | 'bob':1 'care':8 'elastigirl':15 'helen':14 'incred':4 'jack':11,12 'jack-jack':10 'left':6 'mr':3 'parr':2 'save':18 'world':20
+   'tag':1          | 'annual':10 'classmat':6 'countri':22 'elabor':9 'former':5 'game':11 'group':3 'organ':7 'requir':15 'small':2 'tag':13 'travel':18
+   'friends1':1     | 'aaa':2 'friend':3,4,5 'xxx':1
+   'friends2':1     | 'aaa':2 'friend':3 'xxx':1
+   'friends3':1     | 'aaa':2 'friend':3 'xxx':1
+  (8 rows)
+
+  postgres=# select setweight(to_tsvector(title), 'A'), setweight(to_tsvector(body),'B') from pgweb ;
+       setweight      |                                                                    setweight                                                                     
+  --------------------+--------------------------------------------------------------------------------------------------------------------------------------------------
+   'gotti':1A         | 'boss':5B 'crime':4B 'gotti':7B 'john':6B 'son':10B 'stori':2B
+   '3':2A 'race':1A   | 'around':2B 'borderlin':8B 'core':15B 'crime':9B 'deal':6B 'famili':4B 'revolv':1B 'ruthless':10B 'vindict':12B
+   'superfli':1A      | '1972':8B 'blaxploit':9B 'film':10B 'fli':12B 'movi':2B 'remak':5B 'super':11B
+   '2':2A 'incred':1A | 'bob':1B 'care':8B 'elastigirl':15B 'helen':14B 'incred':4B 'jack':11B,12B 'jack-jack':10B 'left':6B 'mr':3B 'parr':2B 'save':18B 'world':20B
+   'tag':1A           | 'annual':10B 'classmat':6B 'countri':22B 'elabor':9B 'former':5B 'game':11B 'group':3B 'organ':7B 'requir':15B 'small':2B 'tag':13B 'travel':18B
+   'friends1':1A      | 'aaa':2B 'friend':3B,4B,5B 'xxx':1B
+   'friends2':1A      | 'aaa':2B 'friend':3B 'xxx':1B
+   'friends3':1A      | 'aaa':2B 'friend':3B 'xxx':1B
+  ```
+
+**原来是在位置后面加了一个A、B、C、D字母，标示权重，OK。**
+
+ps. COALESCE函数的用法复习一下
+
+```
+COALESCE(value [, ...])
+
+COALESCE函数返回它的第一个非空参数的值。当且仅当所有参数都为空时才会返回空。它常用于在为显示目的检索数据时用缺省值替换空值。例如：
+
+SELECT COALESCE(description, short_description, ’(none)’) ...
+
+如果description不为空，这将会返回它的值，否则如果short_description非空则返回short_description的值，如果前两个都为空则返回(none)。 
+
+```
+
+---
+
+### 解析查询 
+
