@@ -51,9 +51,21 @@ SQL 标准和 PostgreSQL 实现的事务隔离级别在 Table 13-1中描述。
 
 - 在PostgreSQL中，你可以请求四种标准事务隔离级别中的任意一种，但是内部只实现了三种不同的隔离级别，即 PostgreSQL 的读未提交模式的行为和读已提交相同。这是因为把标准隔离级别映射到 PostgreSQL 的多版本并发控制架构的唯一合理的方法。
 - 该表格也显示 PostgreSQL 的可重复读实现不允许幻读。而 SQL 标准允许更严格的行为：四种隔离级别只定义了哪种现像不能发生，但是没有定义哪种现像必须发生。可用的隔离级别的行为在下面的小节中详细描述。
-- 要设置一个事务的事务隔离级别，使用SET TRANSACTION命令。 
+- 要设置一个事务的事务隔离级别，使用SET TRANSACTION命令。
 
 
+锁表
+
+| Requested Lock Mode    | ACCESS SHARE | ROW SHARE | ROW EXCLUSIVE | SHARE UPDATE EXCLUSIVE | SHARE | SHARE ROW EXCLUSIVE | EXCLUSIVE | ACCESS EXCLUSIVE |
+| ---------------------- | ------------ | --------- | ------------- | ---------------------- | ----- | ------------------- | --------- | ---------------- |
+| ACCESS SHARE           |              |           |               |                        |       |                     |           | X                |
+| ROW SHARE              |              |           |               |                        |       |                     | X         | X                |
+| ROW EXCLUSIVE          |              |           |               |                        | X     | X                   | X         | X                |
+| SHARE UPDATE EXCLUSIVE |              |           |               | X                      | X     | X                   | X         | X                |
+| SHARE                  |              |           | X             | X                      |       | X                   | X         | X                |
+| SHARE ROW EXCLUSIVE    |              |           | X             | X                      | X     | X                   | X         | X                |
+| EXCLUSIVE              |              | X         | X             | X                      | X     | X                   | X         | X                |
+| ACCESS EXCLUSIVE       | X            | X         | X             | X                      | X     | X                   | X         | X                |
 
 测试数据
 
@@ -122,7 +134,7 @@ MVCC保证了读、写不阻塞，所以这里不涉及锁。
 
 
 
-**[session1]**
+**[session1]**启动事务
 
 ```sql
 begin;
@@ -130,7 +142,7 @@ begin;
 
 ![](images/pgsql-kp-concurrency-0.png)
 
-**[session2]**
+**[session2]**启动事务
 
 ```sql
 begin;
@@ -138,7 +150,7 @@ begin;
 
 ![](images/pgsql-kp-concurrency-1.png)
 
-**[session1]**
+**[session1]**更新数据
 
 ```sql
 update t1 set i=20 where i=2;
@@ -147,7 +159,12 @@ UPDATE 1
 
 ![](images/pgsql-kp-concurrency-2.png)
 
-**[session2]**
+- 更新数据后会在表上挂ROW EXCLUSIVE —— 3级锁。
+- 在s1的事务号上挂一把EXCLUSIVE 锁。
+
+
+
+**[session2]**更新同一条数据
 
 ```sql
 postgres=# update t1 set i=20 where i=2;
@@ -155,3 +172,59 @@ postgres=# update t1 set i=20 where i=2;
 ```
 
 ![](images/pgsql-kp-concurrency-3.png)
+
+- s2在表上也挂了一把ROW EXCLUSIVE —— 3级锁。（3级锁是相容的，所以表上挂的锁没问题）
+- 在操作元组上面挂了一把EXCLUSIVE锁，这里已经获取到了。
+- 在自己的s2的事务号683上面加了一把EXCLUSIVE锁，获取到了。
+- 在s1的事务号682要加一把sharelock，这里与682事务的EXCLUSIVE冲突，所以阻塞在这里。
+
+---
+
+**>>>>初步结论<<<<**
+
+写操作的事务，会在自己的事务号上面加一个排它锁。那更新不同的元组也会阻塞吗？
+
+见下图，两个事务分别更新了同一张标的两行：
+
+![](images/pgsql-kp-concurrency-6.png)
+
+注意这里面没有发生阻塞等锁，每个事务都在自己的事务号上面加了一把排他锁。
+
+所以如果事务二的写元组是 事务一写过的元组，那么事务二会尝试在事务一的事务号上加锁。
+
+如果事务二写的元组不是事务一写过的元组，那么事务二会用自己的事务号加锁。
+
+（更新多条也只在事务ID上加一次锁）
+
+**>>>>结论<<<<**：多个事务更新同一条数据，会用自己的事务号来互斥保证时间戳的规则要求。
+
+---
+
+
+
+**[session1]**提交
+
+```sql
+--s1
+commit;
+COMMIT
+
+--s2
+update t1 set i=20 where i=2;
+UPDATE 0
+```
+
+![](images/pgsql-kp-concurrency-4.png)
+
+
+
+**[session2]**提交
+
+```sql
+--s2
+commit;
+COMMIT
+```
+
+![](images/pgsql-kp-concurrency-5.png)
+
