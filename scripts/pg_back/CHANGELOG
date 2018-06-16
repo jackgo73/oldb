@@ -1,0 +1,43 @@
+pg_back 1.5
+===========
+
+* Support for pg_dumpacl (https://github.com/dalibo/pg_dumpacl)
+
+* RPM Packaging
+
+
+pg_back 1.4
+===========
+
+* Support PostgreSQL 10
+
+
+pg_back 1.3
+===========
+
+* Ensure replication is not paused while an exclusive lock is taken
+
+* Allow a retention policy based on time and number of backups
+
+* Allow to disable purge
+
+
+pg_back 1.2
+===========
+
+* Support pausing replication on standby servers
+
+* Add timestamped information messages
+
+
+pg_back 1.1
+===========
+
+* Support the directory format of pg_dump
+
+
+pg_back 1.0
+===========
+
+* First release
+

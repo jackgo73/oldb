@@ -1,0 +1,327 @@
+#!/bin/bash
+
+#
+# Copyright 2011-2018 Nicolas Thauvin and contributors. All rights
+# reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+version="1.6-dev"
+
+# hardcoded defaults
+PGBK_CONFIG="/etc/postgresql/pg_back.conf"
+PGBK_BACKUP_DIR=/var/backups/postgresql
+PGBK_TIMESTAMP="%Y-%m-%d_%H-%M-%S"
+PGBK_PURGE=30
+PGBK_PURGE_MIN_KEEP=0
+PGBK_OPTS="-Fc"
+PGBK_WITH_TEMPLATES="no"
+PGBK_CONNDB="postgres"
+
+usage() {
+    echo "PostgreSQL simple backup script"
+    echo "usage: `basename $0` [OPTIONS] [DBNAME]..."
+    echo "options:"
+    echo "  -b dir        store dump files there (default: \"$PGBK_BACKUP_DIR\")"
+    echo "  -c config     alternate config file (default: \"$PGBK_CONFIG\")"
+    echo "  -P days       purge backups older than this number of days (default: \"$PGBK_PURGE\")"
+    echo "  -K number     minimum number of backups to keep when purging or 'all' to keep"
+    echo "                everything (default: \"$PGBK_PURGE_MIN_KEEP\")"
+    echo "  -D db1,...    list of databases to exclude"
+    echo "  -t            include templates"
+    echo 
+    echo "  -h hostname   database server host or socket directory (default: \"${PGHOST:-local socket}\")"
+    echo "  -p port       database server port (default: \"$PGPORT\")"
+    echo "  -U username   database user name (default: \"$PGUSER\")"
+    echo "  -d db         database used for connection (default: \"$PGBK_CONNDB\")"
+    echo
+    echo "  -q            quiet mode"
+    echo
+    echo "  -V            print version"
+    echo "  -?            print usage"
+    echo
+    exit $1
+}
+
+now() {
+    echo "$(date "+%F %T %Z")"
+}
+
+error() {
+    echo "$(now)  ERROR: $*" 1>&2
+}
+
+die() {
+    error $*
+    exit 1
+}
+
+info() {
+    [ "$quiet" != "yes" ] && echo "$(now)  INFO: $*" 1>&2
+    return 0
+}
+
+warn() {
+    echo "$(now)  WARNING: $*" 1>&2
+}
+
+args=`getopt "b:c:P:K:D:th:p:U:d:qV?" $*`
+if [ $? -ne 0 ]
+then
+    usage 2
+fi
+
+set -- $args
+for i in $*
+do
+    case "$i" in
+	-b) CLI_BACKUP_DIR=$2; shift 2;;
+	-c) PGBK_CONFIG=$2; shift 2;;
+	-P) CLI_PURGE=$2; shift 2;;
+        -K) CLI_PURGE_MIN_KEEP=$2; shift 2;;
+	-D) CLI_EXCLUDE="`echo $2 | tr ',' ' '`"; shift 2;;
+	-t) CLI_WITH_TEMPLATES="yes"; shift;;
+	-h) CLI_HOSTNAME=$2; shift 2;;
+	-p) CLI_PORT=$2; shift 2;;
+	-d) CLI_CONNDB=$2; shift 2;;
+	-U) CLI_USERNAME=$2; shift 2;;
+	-q) quiet="yes"; shift;;
+	-V) echo "pg_back version $version"; exit 0;;
+	-\?) usage 1;;
+	--) shift; break;;
+    esac
+done
+
+CLI_DBLIST=$*
+
+# Load configuration
+if [ -f "$PGBK_CONFIG" ]; then
+    . $PGBK_CONFIG
+fi
+
+# The backup directory overrides the one in the config file
+if [ -n "$CLI_BACKUP_DIR" ]; then
+    PGBK_BACKUP_DIR=$CLI_BACKUP_DIR
+fi
+
+# Override configuration with cli options
+[ -n "$CLI_PURGE" ] && PGBK_PURGE=$CLI_PURGE
+[ -n "$CLI_PURGE_MIN_KEEP" ] && PGBK_PURGE_MIN_KEEP=$CLI_PURGE_MIN_KEEP
+[ -n "$CLI_EXCLUDE" ] && PGBK_EXCLUDE=$CLI_EXCLUDE
+[ -n "$CLI_WITH_TEMPLATES" ] && PGBK_WITH_TEMPLATES=$CLI_WITH_TEMPLATES
+[ -n "$CLI_HOSTNAME" ] && PGBK_HOSTNAME=$CLI_HOSTNAME
+[ -n "$CLI_PORT" ] && PGBK_PORT=$CLI_PORT
+[ -n "$CLI_USERNAME" ] && PGBK_USERNAME=$CLI_USERNAME
+[ -n "$CLI_DBLIST" ] && PGBK_DBLIST=$CLI_DBLIST
+[ -n "$CLI_CONNDB" ] && PGBK_CONNDB=$CLI_CONNDB
+
+# Prepare common options for pg_dump and pg_dumpall
+[ -n "$PGBK_HOSTNAME" ] && OPTS="$OPTS -h $PGBK_HOSTNAME"
+[ -n "$PGBK_PORT" ] && OPTS="$OPTS -p $PGBK_PORT"
+[ -n "$PGBK_USERNAME" ] && OPTS="$OPTS -U $PGBK_USERNAME"
+
+info "preparing to dump"
+
+# Check if some options are integers
+[[ $PGBK_PURGE =~ ^[[:digit:]]+$ ]] || die "PGBK_PURGE (-P) '$PGBK_PURGE' is not an integer"
+if [[ $PGBK_PURGE_MIN_KEEP != "all" ]]; then
+    [[ $PGBK_PURGE_MIN_KEEP =~ ^[[:digit:]]+$ ]] || die "PGBK_PURGE_MIN_KEEP (-K) '$PGBK_PURGE_MIN_KEEP' is not an integer"
+fi
+
+# Ensure there is a trailing slash in the path to the binaries
+if [ -n "$PGBK_BIN" ]; then
+    PGBK_BIN=$PGBK_BIN/
+    # Also, it must exist
+    if [ ! -d "$PGBK_BIN" ]; then
+	die "$PGBK_BIN directory does not exist"
+    fi
+fi
+
+# Create the backup directory if missing
+if [ ! -d $PGBK_BACKUP_DIR ]; then
+    info "creating directory $PGBK_BACKUP_DIR"
+    mkdir -p $PGBK_BACKUP_DIR
+    if [ $? != 0 ]; then
+	die "could not create $PGBK_BACKUP_DIR"
+    fi
+fi
+
+# Get version of the server
+PG_VERSION=`${PGBK_BIN}psql -X $OPTS -At -c "SELECT setting FROM pg_settings WHERE name = 'server_version_num';" $PGBK_CONNDB 2>/dev/null`
+if [ $? != 0 ]; then
+    die "could not get the version of the server"
+fi
+
+# As of PostgreSQL 10, "xlog" has been changed to "wal", it applies to functions
+if (( 10#$PG_VERSION >= 100000 )); then
+    xlog_or_wal="wal"
+else
+    xlog_or_wal="xlog"
+fi
+
+info "target directory is $PGBK_BACKUP_DIR"
+
+# Check if replay pause is available
+PG_HASPAUSE=`${PGBK_BIN}psql -X $OPTS -At -c "SELECT 1 FROM pg_proc WHERE proname='pg_${xlog_or_wal}_replay_pause' AND pg_is_in_recovery();" $PGBK_CONNDB 2>/dev/null`
+if [ $? != 0 ]; then
+    info "could not check for replication control functions"
+fi
+
+# Pause replay if dumping from a slave
+if [ "${PG_HASPAUSE}" = "1" ]; then
+    info "pausing replication replay"
+
+    # Wait for exclusive locks to get released on the slave before
+    # pausing the replication replay
+    typeset -i PGBK_EXCLLOCKS;
+    PGBK_EXCLLOCKS=1;
+    while [ $PGBK_EXCLLOCKS -gt 0  ]
+    do
+        ${PGBK_BIN}psql -X $OPTS -At -c "SELECT pg_${xlog_or_wal}_replay_pause() where pg_is_in_recovery();" $PGBK_CONNDB
+        if [ $? != 0 ]; then
+            die "could not pause replication replay"
+        fi
+        PGBK_EXCLLOCKS=`${PGBK_BIN}psql -X $OPTS -At -c "SELECT count(*) FROM pg_locks WHERE mode = 'AccessExclusiveLock';" $PGBK_CONNDB`
+        if [ $? != 0 ]; then
+            die "could not get lock information"
+        fi
+        if [ $PGBK_EXCLLOCKS -gt 0 ]; then
+            ${PGBK_BIN}psql -X $OPTS -At -c "SELECT pg_${xlog_or_wal}_replay_resume();" $PGBK_CONNDB
+            if [ $? != 0 ]; then
+                die "could not resume replication replay"
+            fi
+	    echo "The slave database has exclusive locks (vacuum full, truncate or other locking command) running on master"
+            echo "Resuming replication for 10s"
+            sleep 10
+	fi
+    done
+fi
+
+# Prepare the list of databases to dump
+if [ -z "$PGBK_DBLIST" ]; then
+    info "listing databases"
+    if [ "$PGBK_WITH_TEMPLATES" = "yes" ]; then
+	DB_QUERY="SELECT datname FROM pg_database WHERE datallowconn;"
+    else
+	DB_QUERY="SELECT datname FROM pg_database WHERE datallowconn AND NOT datistemplate;"
+    fi
+
+    PGBK_DBLIST=`${PGBK_BIN}psql -X $OPTS -At -c "$DB_QUERY" $PGBK_CONNDB`
+    if [ $? != 0 ]; then
+	die "could not list databases"
+    fi
+fi
+
+dumped=()
+# Dump roles and tablespaces first
+info "dumping global objects"
+${PGBK_BIN}pg_dumpall $OPTS -g > $PGBK_BACKUP_DIR/pg_global_`date "+${PGBK_TIMESTAMP}"`.sql
+if [ $? != 0 ]; then
+    error "pg_dumpall -g failed"
+    out_rc=1
+else
+    dumped+=( "pg_global" )
+fi
+
+# Dump database
+for db in $PGBK_DBLIST
+do
+    # Do not dump excluded databases
+    echo $PGBK_EXCLUDE | grep -w $db >/dev/null 2>&1
+    if [ $? = 0 ]; then
+	continue
+    fi
+
+    # Dump all statements necessary to recreate the database include
+    # privileges with pg_dumpacl. See https://github.com/dalibo/pg_dumpacl
+    if [ -x ${PGBK_BIN}pg_dumpacl ] ; then
+        dump="${PGBK_BACKUP_DIR}/${db}_$(date +${PGBK_TIMESTAMP}).createdb.sql"
+        info "dumping creation statement of database \"$db\" into ${dump}"
+        if ! ${PGBK_BIN}pg_dumpacl $OPTS -d $db -f ${dump} ; then
+            out_rc=1
+            error "pg_dumpacl of database \"$db\" failed"
+        fi
+    fi
+
+    # Dump and remember which db were properly dumped for purge
+    dump="${PGBK_BACKUP_DIR}/${db}_$(date "+${PGBK_TIMESTAMP}").dump"
+    info "dumping database \"$db\" into ${dump}"
+    if ! ${PGBK_BIN}pg_dump $OPTS $PGBK_OPTS -f ${dump} $db; then
+        out_rc=1
+        rm -f ${dump}
+        error "pg_dump of database \"$db\" failed"
+    else
+        dumped+=( "$db" )
+    fi
+done
+
+# Resume replay if dumping from a slave
+if [ "${PG_HASPAUSE}" = "1" ]; then
+    info "resuming replication replay"
+    ${PGBK_BIN}psql -X $OPTS -At -c "SELECT pg_${xlog_or_wal}_replay_resume();" $PGBK_CONNDB
+    if [ $? != 0 ]; then
+        die "could not resume replication replay"
+    fi
+fi
+
+if [[ $PGBK_PURGE_MIN_KEEP == "all" ]]; then
+    info "old backups kept as requested"
+else
+    # Purge old backups, only if current backup succeeded
+    info "purging old backups"
+
+    # Transform number of days to a timestamp for Epoch
+    limit_ts=$(($(date +%s) - 86400 * $PGBK_PURGE))
+
+    for db in "${dumped[@]}"; do
+        # List the dump for databases that were successfully dumped along
+        # with the time of last modification since Epoch. Sort them so
+        # that the newest come first and keep
+        to_purge=()
+        i=1
+        while read line; do
+            if (( $i > ${PGBK_PURGE_MIN_KEEP:-0} )); then
+                to_purge+=( "$line" )
+            fi
+            (( i++ ))
+        done < <(stat -c '%Y|%n' $PGBK_BACKUP_DIR/${db}_*.{dump,sql} 2>/dev/null | sort -rn)
+
+        # Check if the file/dir is old enough to be removed
+        for dump in "${to_purge[@]}"; do
+            ts=$(cut -d'|' -f 1 <<< "$dump")
+            filename=$(cut -d'|' -f 2 <<< "$dump")
+
+            if (( $ts <= $limit_ts )); then
+                info "removing $filename"
+                if ! rm -rf -- "$filename"; then
+                    error "could not purge $filename"
+                fi
+            fi
+        done
+    done
+fi
+
+info "done"
+
+exit $out_rc
+
