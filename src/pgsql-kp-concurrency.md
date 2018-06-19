@@ -4,7 +4,7 @@
 
 之前客户问过在不同隔离级别下，事务并发会产生什么效果，这里从事务的现象、锁表状态等角度分析不同隔离级别下，读读、读写、写写数据冲突的效果。
 
-尽量总结全，以后客户问就不用再做实验了。
+**尽量总结全，记住锁表的变化效果**，以后客户问就不用再做实验了。
 
 ## 基础概念（手册）
 
@@ -89,9 +89,17 @@ postgres=# select * from t1;
 (10 rows)
 ```
 
+ps.看当前事务号
 
+```sql
+select txid_current();
+```
 
 ## 读已提交隔离级别 
+
+在读已提交模式中，每个命令都是从一个新的快照开始的，而这个快照包含在该时刻提交的事务， 因此同一事务中的后续命令将看到任何已提交的并行事务的效果。以上的焦点在于单个命令是否看到数据库的绝对一致的视图。
+
+读已提交模式提供的部分事务隔离对于许多应用而言是足够的，并且这个模式速度快并且使用简单。 不过，它不是对于所有情况都够用。做复杂查询和更新的应用可能需要比读已提交模式提供的更严格一致的数据库视图。 
 
 ### 读写冲突
 
@@ -128,11 +136,9 @@ MVCC保证了读、写不阻塞，所以这里不涉及锁。
 
 ### 写写冲突
 
-**[session1]事务号682**
-
-**[session2]事务号683**
-
-
+> **[session1]事务号682**
+>
+> **[session2]事务号683**
 
 **[session1]**启动事务
 
@@ -230,3 +236,114 @@ COMMIT
 
 ![](images/pgsql-kp-concurrency-5.png)
 
+
+
+## 可重复读隔离级别 
+
+- 可重复读隔离级别只看到在事务开始之前被提交的数据
+- 它从来看不到未提交的数据或者并行事务在本事务执行期间提交的修改（不过，查询能够看见在它的事务中之前执行的更新，即使它们还没有被提交）。这是比SQL标准对此隔离级别所要求的更强的保证，并且阻止除了序列化异常之外的所有现象。如上面所提到的，这是标准特别允许的，标准只描述了每种隔离级别必须提供的最小保护。
+- 这个级别与读已提交不同之处在于，一个可重复读事务中的查询可以看见在事务中第一个非事务控制语句开始时的一个快照，而不是事务中当前语句开始时的快照。因此，在一个单一事务中的后续SELECT命令看到的是相同的数据，即它们看不到其他事务在本事务启动后提交的修改。
+- 使用这个级别的应用必须准备好由于序列化失败而重试事务。 
+
+### 读写冲突
+
+脏读 >>> 不会发生
+
+幻读、不可重复读 >>>  不会发生
+
+```sql
+BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;                                                                                             BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+select * from t1 where i = 3;                    
+ i                                               
+---
+ 3
+(1 row)
+
+                                              update t1 set i=30 where i=3;
+                                              UPDATE 1
+                                                 
+select * from t1 where i = 3;
+ i 
+---
+ 3
+(1 row)
+
+                                              commit;
+                                                  
+postgres=# select * from t1 where i = 1;
+ i 
+---
+ 3
+(1 rows)
+```
+
+- MVCC保证了读、写不阻塞，所以这里不涉及锁。
+- 即使表里面已经没有3了，可是在事务里面还是能查到3，这就是begin时锁定快照的效果，整个事务内覆盖同一个快照。
+
+### 写写冲突
+
+> [session1]事务号688
+>
+> [session2]事务号689
+
+**[session1]**启动事务
+
+```sql
+postgres=# BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+BEGIN
+```
+
+![](images/pgsql-kp-concurrency-7.png)
+
+**[session2]**启动事务
+
+```sql
+postgres=# BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+BEGIN
+```
+
+![](images/pgsql-kp-concurrency-8.png)
+
+**[session1]**更新数据
+
+```sql
+postgres=# update t1 set i=40 where i=4;
+UPDATE 1
+```
+
+![](images/pgsql-kp-concurrency-9.png)
+
+**[session2]**更新数据
+
+```sql
+postgres=# update t1 set i=40 where i=4;
+-- 阻塞
+```
+
+![](images/pgsql-kp-concurrency-10.png)
+
+- s2在表上也挂了一把ROW EXCLUSIVE —— 3级锁。（3级锁是相容的，所以表上挂的锁没问题）
+- 在操作元组上面挂了一把EXCLUSIVE锁，这里已经获取到了。
+- 在自己的s2的事务号689上面加了一把EXCLUSIVE锁，获取到了。
+- 在s1的事务号688要加一把sharelock，这里与688事务的EXCLUSIVE冲突，所以阻塞在这里。
+
+**>>>>结论同读已提交<<<<**
+
+多个事务更新同一条数据，会用自己的事务号来互斥保证时间戳的规则要求。
+
+**[session1]**提交数据
+
+```sql
+postgres=# commit;
+COMMIT
+```
+
+**[session2]**序列化错误
+
+```sql
+ERROR:  could not serialize access due to concurrent update
+```
+
+
+
+如session1回滚，则session2可以成功执行update。在可重复读的隔离级别下，多事务对同一数据进行更新只有一个事务可以成功，其他事务阻塞后会报序列化错误，**导致整个事务回滚**。
