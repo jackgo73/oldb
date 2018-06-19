@@ -4,7 +4,7 @@
 
 ### postgresql
 
-[构造postgresql测试数据库（填充一个数据库）](others/pgsql-sql-testdatabase.md)
+[构造postgresql测试数据库（填充一个数据库）](src/pgsql-sql-testdatabase.md)
 
 #### SQL引擎
 
