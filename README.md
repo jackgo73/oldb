@@ -4,6 +4,8 @@
 
 ### postgresql
 
+[构造postgresql测试数据库（填充一个数据库）](others/pgsql-sql-testdatabase.md)
+
 #### SQL引擎
 
 [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
@@ -83,7 +85,11 @@ xxx
 
 ### linux
 
-[SetupSSH](scripts/SetupSSH)
+[SetupSSH](scripts/SetupSSH)   ing...
+
+
+
+
 
 
 
