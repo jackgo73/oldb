@@ -383,3 +383,152 @@ database "Database" {
 ```
 
 ![](images/utils-plantuml-13.png)
+
+## 活动图
+
+```
+@startuml
+
+start
+:ClickServlet.handleRequest();
+:new page;
+if (Page.onSecurityCheck) then (true)
+  :Page.onInit();
+  if (isForward?) then (no)
+	:Process controls;
+	if (continue processing?) then (no)
+	  stop
+	endif
+	
+	if (isPost?) then (yes)
+	  :Page.onPost();
+	else (no)
+	  :Page.onGet();
+	endif
+	:Page.onRender();
+  endif
+else (false)
+endif
+
+if (do redirect?) then (yes)
+  :redirect process;
+else
+  if (do forward?) then (yes)
+	:Forward request;
+  else (no)
+	:Render page template;
+  endif
+endif
+
+stop
+
+@enduml
+```
+
+![](images/utils-plantuml-14.png)
+
+```
+@startuml
+
+start
+
+if (multiprocessor?) then (yes)
+  fork
+    -[#blue]->
+	:Treatment 1;
+
+  fork again
+
+	:Treatment 2;
+  end fork
+else (monoproc)
+  -[#green,dashed]->
+  :Treatment 1;
+  note right
+    This note is on several
+    //lines// and can
+    contain <b>HTML</b>
+    ====
+    * Calling the method ""foo()"" is prohibited
+  end note
+  :Treatment 2;
+endif
+
+@enduml
+```
+
+![](images/utils-plantuml-15.png)
+
+```
+@startuml
+|Swimlane1|
+start
+:foo1;
+|#AntiqueWhite|Swimlane2|
+partition Initialization {
+  :foo2;
+  :foo3;
+}
+|Swimlane1|
+partition Running {
+  :foo4;
+}
+|Swimlane2|
+:foo5;
+stop
+@enduml
+```
+
+![](images/utils-plantuml-16.png)
+
+```
+@startuml
+ :start;
+ fork
+   :foo1;
+   :foo2;
+ fork again
+   :foo3;
+   detach
+ endfork
+ if (foo4) then
+   :foo5;
+   detach
+ endif
+ :foo6;
+ detach
+ :foo7;
+ stop
+@enduml
+```
+
+![](images/utils-plantuml-17.png)
+
+```
+@startuml
+:Ready;
+:next(o)|
+:Receiving;
+split
+ :nak(i)<
+ :ack(o)>
+split again
+ :ack(i)<
+ :next(o)
+ on several line|
+ :i := i + 1]
+ :ack(o)>
+split again
+ :err(i)<
+ :nak(o)>
+split again
+ :foo/
+split again
+ :i > 5}
+stop
+end split
+:finish;
+@enduml
+```
+
+![](images/utils-plantuml-18.png)
