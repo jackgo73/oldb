@@ -1,14 +1,15 @@
 @startuml
-actor Bob #red
-' The only difference between actor
-'and participant is the drawing
-participant Alice
-participant "I have a really\nlong name" as L #99FF99
-/' You can also declare:
-   participant L as "I have a really\nlong name"  #99FF99
-  '/
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
 
-Alice->Bob: Authentication Request
-Bob->Alice: Authentication Response
-Bob->L: Log transaction
+box "Foo1"
+participant Alice1
+participant Alice2
+end box
+box "Foo2"
+participant Bob1
+participant Bob2
+end box
+Alice1 -> Bob1 : hello
+Alice1 -> Out : out
 @enduml
