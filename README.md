@@ -79,6 +79,36 @@ xxx
 
 (201804)[《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
 
+## 数据库论文整理
+
+### [1]概述
+
+[System R relational approach to database management](paper/[1]System R relational approach to database management.pdf)
+
+[The design and implementation of INGRES](paper/[1]The design and implementation of INGRES.pdf)
+
+### [2]存储管理
+
+### [3]索引
+
+### [4]查询执行
+
+### [5]查询编译器
+
+### [6]日志
+
+### [7]并发控制
+
+### [8]事务
+
+### [9]分布式数据库
+
+
+
+
+
+
+
 ## 脚本
 
 ### postgresql
