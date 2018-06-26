@@ -42,11 +42,9 @@
 
 [《安装PostgresXL》](src/pgsql-deploy-xl.md)
 
-#### 经验技巧
 
-[《LT && SQL总结》](src/sql-exec-leetcode.md)
 
-[《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
+
 
 
 
@@ -85,21 +83,11 @@ xxx
 
 [genv](scripts/genv)
 
+
+
 ### linux
 
 [SetupSSH](scripts/SetupSSH)   ing...
-
-
-
-
-
-
-
-## Swift
-
-环境已经研究ok，开始玩玩swift~
-
-
 
 
 
