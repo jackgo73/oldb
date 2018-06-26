@@ -1,6 +1,6 @@
 # 拆解分析德哥给出的表膨胀检测SQL
 
-> 高铭杰  20180625  jackgo73@outlook.com
+> jackgao  20180625  jackgo73@outlook.com
 
 经常用德哥给出的表膨胀和索引膨胀检测SQL，这里拆解开逐项做下分析，是个学习长SQL、函数、系统表非常不错的案例。
 
