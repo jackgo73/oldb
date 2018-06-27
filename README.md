@@ -83,7 +83,7 @@ xxx
 
 ### [1]概述
 
-[System R relational approach to database management](paper/[1]System R relational approach to database management.pdf)
+[System R relational approach to database management](paper/[1]System_R_relational_approach_to_database_management.pdf)
 
 [The design and implementation of INGRES](paper/[1]The design and implementation of INGRES.pdf)
 
