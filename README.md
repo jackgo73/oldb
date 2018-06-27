@@ -10,9 +10,9 @@
 
 (201805) [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
-**(201805) [《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
+(201805 80%) [《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
 
-**(201805) [《postgresql全文搜索》](src/pgsql-sql-fulltextsearch.md)
+(201805 80%) [《postgresql全文搜索》](src/pgsql-sql-fulltextsearch.md)
 
 (201805) [《LT && SQL总结》](src/sql-exec-leetcode.md)
 
@@ -45,47 +45,41 @@
 (201712)[《安装PostgresXL》](src/pgsql-deploy-xl.md)
 
 
-
-
-
-
-
-
 ### greenplum
 
-xxx
+
 
 ### oracle
 
 (201802) [《oracle12c安装记录》](src/orcl-deploy-12c.md)
 
-(201801)[《Oracle监听连接》](src/orcl-fun-lsnrctl.md)
+(201801) [《Oracle监听连接》](src/orcl-fun-lsnrctl.md)
 
-(201801)[orcl-cheatsheet.sql](src/orcl-cheatsheet.sql)
+(201801) [orcl-cheatsheet.sql](src/orcl-cheatsheet.sql)
 
 ### Linux
 
-(201712)[《Centos Firewalld》](src/linux-centos-firewalld.md)
+(201712) [《Centos Firewalld》](src/linux-centos-firewalld.md)
 
 ### 未归类
 
-(201805)[《plantuml》](src/utils-plantuml.md)
+(201805) [《plantuml》](src/utils-plantuml.md)
 
-(201801)[《win多网卡路由》](src/utils-win-doalnetwordcardrounting.md)
+(201801) [《win多网卡路由》](src/utils-win-doalnetwordcardrounting.md)
 
-(201805)[《Google Style Guides-Shell Style Guide(翻译)》](src/shell-style.md)
+(201805) [《Google Style Guides-Shell Style Guide(翻译)》](src/shell-style.md)
 
 
 
-(201804)[《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
+(201804) [《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
 
 ## 数据库论文整理
 
 ### [1]概述
 
-[System R relational approach to database management](paper/1_System_R_relational_approach_to_database_management.pdf)
+(201806 20%) [System R relational approach to database management](paper/1_System_R_relational_approach_to_database_management.pdf)
 
-[The design and implementation of INGRES](paper/1_The_design_and_implementation_of_INGRES.pdf)
+(201806 50%) [The design and implementation of INGRES](paper/1_The_design_and_implementation_of_INGRES.pdf)
 
 ### [2]存储管理
 
