@@ -85,7 +85,7 @@ xxx
 
 [System R relational approach to database management](paper/1_System_R_relational_approach_to_database_management.pdf)
 
-[The design and implementation of INGRES](paper/1_The design and implementation of INGRES.pdf)
+[The design and implementation of INGRES](paper/1_The_design_and_implementation_of_INGRES.pdf)
 
 ### [2]存储管理
 
