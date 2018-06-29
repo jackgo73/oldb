@@ -83,9 +83,11 @@
 
 ### [1]概述
 
-(201806 20%) [System R relational approach to database management](paper/1_System_R_relational_approach_to_database_management.pdf)
+DBSI
 
-(201806 50%) [The design and implementation of INGRES](paper/1_The_design_and_implementation_of_INGRES.pdf)
+(201806 20%) [1_System_R_relational_approach_to_database_management.pdf](paper/1_System_R_relational_approach_to_database_management.pdf)
+
+(201806 50%) [1_The_design_and_implementation_of_INGRES.pdf](paper/1_The_design_and_implementation_of_INGRES.pdf)
 
 ### [2]存储管理
 
@@ -96,6 +98,44 @@
 ### [5]查询编译器
 
 ### [6]日志
+
+> DBSI
+>
+> 最重要的文献是5，这本书的部分材料来自Jim Gray关于事务的一些非正规、广为传播的文献3；后者以及文献4和8是许多日志和恢复技术的主要来源。
+>
+> 文献2是对事务处理基础一个更早、更简洁的描述。文献7是对这一主题的较近期的论述。
+>
+> 两个早期的综述1和6，都描绘了关于恢复的大量技术性工作，并且将这一主题按照undo-redo-undo/redo3部分来组织，这本书也采用这种形式。
+
+(1) (下不到) Recovery algorithms for database systems
+
+(2) (下不到) Concurrency control and recovery in database systems
+
+(3) (下不到) Notes on data base operating systems
+
+(4) (201806) [6_The_recovery_manager_of_the_System_R_database_manager.pdf](paper/6_The_recovery_manager_of_the_System_R_database_manager.pdf)
+
+(5) (J Gray那本经典书) Transaction processing: concepts and techniques
+
+(6) (201806) [6_Principles_of_transaction-oriented_database_recovery.pdf](paper/6_Principles_of_transaction-oriented_database_recovery.pdf)
+
+(7) (下不到 书) Recovery mechanisms in database systems
+
+(8) (201806) [6_ARIES_a_transaction_recovery_method_supporting_fine-granularity_locking_and_partial_rollbacks_using_write-ahead_logging.pdf](paper/6_ARIES_a_transaction_recovery_method_supporting_fine-granularity_locking_and_partial_rollbacks_using_write-ahead_logging.pdf)
+
+---
+
+>TPCT
+>
+>
+
+(1) (下不到) Notes on data base operating systems
+
+(2) (201806) [6_Crash_recovery_in_a_distributed_data_storage_system.pdf](paper/6_Crash_recovery_in_a_distributed_data_storage_system.pdf)
+
+(3) (下不到) System level concurrency control for distributed database systems
+
+
 
 ### [7]并发控制
 
