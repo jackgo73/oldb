@@ -139,7 +139,7 @@ FROM (
 
 *Q: hdr和ma是什么意思？？*
 
-
+A: hdr是pageheaderdata的长度，ma是机器字长
 
 ### 知识点
 
@@ -340,7 +340,7 @@ WHERE att.attnum > 0 AND tbl.relkind=$$r$$;    --列编号大于0，表示非系
 
 \>>>>> SUM((1-coalesce(null_frac,0))*coalesce(avg_width, 2048)) \<<<<<
 
-**求和：表的一列有数据的比例 * 列项的平均字节宽度 = 该表一行平均数据宽度**
+**求和（表的一列有数据的比例 * 列项的平均字节宽度） = 该表一行平均数据宽度**
 
 (注意这里求和的每一个子项都是当前表的一列)
 
@@ -436,7 +436,9 @@ SELECT
 
 *Q: 计算结果代表什么？*
 
+hdr对齐到ma的整数倍上面（结构体的字节对齐，模仿pg对齐代码）
 
+然后再把对齐后的hdr加到datawidth（每一行的数据宽度）上面
 
 `(maxfracsum*(nullhdr+ma-(case when nullhdr%ma=0 THEN ma ELSE nullhdr%ma END)))`
 
@@ -489,33 +491,9 @@ FROM (
 ) AS sml order by wastedbytes desc limit 5;
 ```
 
-## 第五步遇到阻塞问题
-
-后面分析需要先解决 hdr 和 ma 的问题：
-
-```
-SELECT  
-          (SELECT current_setting($$block_size$$)::numeric) AS bs,  
-          CASE WHEN SUBSTRING(SPLIT_PART(v, $$ $$, 2) FROM $$#"[0-9]+.[0-9]+#"%$$ for $$#$$) 
-            IN ($$8.0$$,$$8.1$$,$$8.2$$) THEN 27 ELSE 23 END AS hdr,  
-          CASE WHEN v ~ $$mingw32$$ OR v ~ $$64-bit$$ THEN 8 ELSE 4 END AS ma  
-        FROM (SELECT version() AS v) AS foo;
-
-  bs  | hdr | ma 
-------+-----+----
- 8192 |  23 |  8
-(1 row)      
-```
-
-这里hdr和ma是什么意思？
 
 
-
-
-
-##（未解决）
-
-## 第六步解决问题后继续拆(PART4)
+## 第五步解决问题后继续拆(PART4)
 
 使用PART3化简原始SQL后，取出PART4：
 
