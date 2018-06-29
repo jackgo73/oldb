@@ -16,7 +16,7 @@
 
 (201805) [《LT && SQL总结》](src/sql-exec-leetcode.md)
 
-(201806) [《拆解分析德哥给出的表膨胀检测SQL》](src/pgsql-sql-bloatsql.md)
+(201806 50%) [《拆解分析德哥给出的表膨胀检测SQL》](src/pgsql-sql-bloatsql.md)
 
 #### 存储引擎
 
@@ -60,6 +60,12 @@
 ### Linux
 
 (201712) [《Centos Firewalld》](src/linux-centos-firewalld.md)
+
+### 完美的开发环境
+
+() 补充一篇mac下docker的操作手册
+
+
 
 ### 未归类
 
@@ -122,6 +128,18 @@ TPCT
 [SetupSSH](scripts/SetupSSH)   ing...
 
 
+
+
+
+# Morning A4 Plan
+
+some thing in the morning
+
+| Date     | Time | Content | Tag  | Link |
+| -------- | ---- | ------- | ---- | ---- |
+| 20180630 |      |         |      |      |
+|          |      |         |      |      |
+|          |      |         |      |      |
 
 
 
