@@ -61,7 +61,7 @@
 
 (201712) [《Centos Firewalld》](src/linux-centos-firewalld.md)
 
-### 完美的开发环境
+### 必须顺手的开发环境相关
 
 () 补充一篇mac下docker的操作手册
 
@@ -79,7 +79,7 @@
 
 (201804) [《Postgresql 执行计划&索引相关》delete](src/pgsql-fun-explain.md)
 
-## 数据库论文整理
+## Database Paper
 
 ### [1]概述
 
@@ -101,7 +101,9 @@
 
 
 
-TPCT
+TPCT文章：
+
+
 
 
 
@@ -111,11 +113,21 @@ TPCT
 
 
 
+## Database Book
 
+(20180601 10%) (日志恢复) Transaction Processing Concepts and Techniques
 
+(20180201 100%) (日志恢复) 数据库系统实现
 
+(20180320 100%) (并发控制) 数据库系统实现
 
-## 脚本
+(20180402 100%) (事务管理) 数据库系统实现
+
+(20180423 100%) (SQL引擎部分) PostgreSQL数据库内核分析
+
+(20180504 100%) (存储引擎部分) PostgreSQL数据库内核分析
+
+## Scripts
 
 ### postgresql
 
@@ -129,8 +141,6 @@ TPCT
 
 
 
-
-
 # Morning A4 Plan
 
 some thing in the morning
@@ -138,8 +148,8 @@ some thing in the morning
 | Date     | Time | Content | Tag  | Link |
 | -------- | ---- | ------- | ---- | ---- |
 | 20180630 |      |         |      |      |
-|          |      |         |      |      |
-|          |      |         |      |      |
+| 20180701 |      |         |      |      |
+| 20180702 |      |         |      |      |
 
 
 
