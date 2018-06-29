@@ -4,7 +4,7 @@
 
 ### postgresql
 
-(201806) [构造postgresql测试数据库（填充一个数据库）](src/pgsql-sql-testdatabase.md)
+(201806 50%) [构造postgresql测试数据库（填充一个数据库）](src/pgsql-sql-testdatabase.md)
 
 #### SQL引擎
 
