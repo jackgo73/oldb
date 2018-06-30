@@ -91,6 +91,9 @@ yum install google-chrome-stable -y --nogpgcheck
 
 ```
 https://github.com/FelisCatus/SwitchyOmega/releases/download/v2.5.15/SwitchyOmega.crx
+
+https://raw.githubusercontent.com/mutex73/blog/master/backup/SwitchyOmega/OmegaOptions.bak
+
 https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
 ```
 
