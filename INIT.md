@@ -77,6 +77,10 @@ git config --global https.proxy 'socks5://127.0.0.1:1091'
 ## Chrome
 
 ```
+https://github.com/FelisCatus/SwitchyOmega/releases/download/v2.5.15/SwitchyOmega.crx
+```
+
+```
 cat << EOF > /etc/yum.repos.d/google-chrome.repo
 [google-chrome]
 name=google-chrome
