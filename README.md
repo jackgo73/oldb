@@ -227,15 +227,13 @@ http://www.interdb.jp/pg/
 
 # Morning A4 Plan
 
-some thing in the morning
+<details>
+<summary>Morning A4 Plan</summary>
+20180705 
 
-| Date     | Time | Content | Tag  | Link |
-| -------- | ---- | ------- | ---- | ---- |
-| 20180630 |      |         |      |      |
-| 20180701 |      |         |      |      |
-| 20180702 |      |         |      |      |
+20180706
 
-
+</details>
 
 ---
 
@@ -257,8 +255,3 @@ some thing in the morning
 
 
 
-<details>
-  <summary>点击时的区域标题</summary>
-  <p> - 测试 测试测试</p>
-  <p> 测试二 测试三 。。。。。 .</p>
-</details>
