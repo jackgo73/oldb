@@ -44,6 +44,8 @@
 
 (201712)[《安装PostgresXL》](src/pgsql-deploy-xl.md)
 
+(201807)[《Postgresql Tuning》](src/pgsql-tuning.md)
+
 
 ### greenplum
 
