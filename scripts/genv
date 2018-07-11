@@ -185,7 +185,20 @@ insert into t5 select generate_series(1,4000000),md5(random()::text),clock_times
 insert into t6 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
 insert into t7 select generate_series(1,1000000),md5(random()::text),clock_timestamp();
 insert into t8 select generate_series(1,5000000),md5(random()::text),clock_timestamp();
+==========================================================================
 drop table t1,t2,t3,t4,t5,t6,t7,t8;
+do language plpgsql $$    
+declare    
+  v_sql text;    
+begin    
+  for i in 1..1000 loop    
+    v_sql := 'create table test_'||i||'(id int, info text)';    
+    execute v_sql;    
+    v_sql := 'insert into test_'||i||'(id,info) select generate_series(1,1000),''test''';    
+    execute v_sql;    
+  end loop;    
+end;    
+$$;    
 ==========================================================================
 create table t8(id int, info int[]);
 insert into t8 select generate_series(1,10000),'{1,1,2,2,3,3,4,4}'::int[];
