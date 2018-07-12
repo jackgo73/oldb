@@ -257,3 +257,16 @@ http://www.interdb.jp/pg/
 
 
 
+
+
+
+
+---
+
+
+
+乱七八糟记录：
+
+todo
+
+pg_man: select pg_man('max_connections')返回手册中这参数的介绍，自动识别版本。
