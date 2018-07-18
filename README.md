@@ -231,9 +231,13 @@ http://www.interdb.jp/pg/
 
 <details>
 <summary>Morning A4 Plan</summary>
-20180705 
+2018年7月第1周：实现、概念、文章
 
-20180706
+2018年7月第2周：存储、执行引擎
+
+2018年7月第3周：索引、SQL引擎
+
+2018年7月第4周
 
 </details>
 
