@@ -213,6 +213,8 @@ http://www.interdb.jp/pg/
 
 (script 100%) [genv](scripts/genv)
 
+(script 100%) [pg_archive.sh](scripts/pg_archive.sh)
+
 
 
 (extentions 100%) [pg_memorycontext (release on pgxn)](https://pgxn.org/dist/pg_memorycontext/1.0.1/)
