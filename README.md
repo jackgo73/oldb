@@ -8,6 +8,10 @@
 
 #### SQL引擎
 
+关系运算分类
+
+
+
 (201805) [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
 (201805 80%) [《Planet Express案例——执行计划&成本分析》](src/sql-exec-planetexpress.md)
@@ -64,6 +68,14 @@
 (201712) [《Centos Firewalld》](src/linux-centos-firewalld.md)
 
 perf
+
+### 运维
+
+IP的分段子网掩码计算1.1.1.1/26
+
+磁盘inode，删了文件空间未减少？
+
+文件过滤，文件名正则、时间修改创建时间ctime
 
 ### 必须顺手的开发环境相关
 
