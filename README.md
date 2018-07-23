@@ -8,9 +8,7 @@
 
 #### SQL引擎
 
-关系运算分类
-
-
+(201807) [关系代数](src/sql-kp-relation_algebra.md)
 
 (201805) [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
