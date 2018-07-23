@@ -8,7 +8,7 @@
 
 #### SQL引擎
 
-(201807) [关系代数](src/sql-kp-relation_algebra.md)
+(201807) [《关系代数》](src/sql-kp-relation_algebra.md)
 
 (201805) [《The Hospital案例——执行计划&成本分析（未完）》](src/sql-exec-hospital.md)
 
@@ -65,17 +65,13 @@
 
 (201712) [《Centos Firewalld》](src/linux-centos-firewalld.md)
 
-(201807) [《子网掩码 & vlsm》](src/linux-kp-netmask.md)
+(201807 30%) [《子网掩码 & vlsm》](src/linux-kp-netmask.md)
 
 perf
 
 ### 运维
 
-IP的分段子网掩码计算1.1.1.1/26
-
-磁盘inode，删了文件空间未减少？
-
-文件过滤，文件名正则、时间修改创建时间ctime
+待整理：IP的分段子网掩码计算1.1.1.1/26；磁盘inode，删了文件空间未减少？；文件过滤，文件名正则、时间修改创建时间ctime
 
 ### 必须顺手的开发环境相关
 
