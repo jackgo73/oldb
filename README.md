@@ -65,6 +65,8 @@
 
 (201712) [《Centos Firewalld》](src/linux-centos-firewalld.md)
 
+(201807) [《子网掩码 & vlsm》](src/linux-kp-netmask.md)
+
 perf
 
 ### 运维
