@@ -2,25 +2,11 @@
 
 ## Blogs
 
-
-
-<details>
-<summary>postgresql</summary>
-
-  
-
-(201806 50%) [《构造postgresql测试数据库（填充一个数据库）》](src/pgsql-sql-testdatabase.md)
-
-  
-
-</details>
+### Postgresql
 
 
 
-<details>
-<summary>SQL引擎</summary>
-
-  
+#### SQL引擎
 
 (201807) [《关系代数》](src/sql-kp-relation_algebra.md)
 
@@ -33,12 +19,6 @@
 (201805) [《LT && SQL总结》](src/sql-exec-leetcode.md)
 
 (201806 50%) [《拆解分析德哥给出的表膨胀检测SQL》](src/pgsql-sql-bloatsql.md)
-
-  
-
-</details>
-
-
 
 #### 存储引擎
 
@@ -68,12 +48,14 @@
 
 (201807)[《Postgresql Tuning》](src/pgsql-tuning.md)
 
-
-### greenplum
-
+(201806 50%) [《构造postgresql测试数据库（填充一个数据库）》](src/pgsql-sql-testdatabase.md)
 
 
-### oracle
+### Greenplum
+
+
+
+### Oracle
 
 (201802) [《oracle12c安装记录》](src/orcl-deploy-12c.md)
 
@@ -93,11 +75,13 @@ perf
 
 待整理：IP的分段子网掩码计算1.1.1.1/26；磁盘inode，删了文件空间未减少？；文件过滤，文件名正则、时间修改创建时间ctime
 
-### 必须顺手的开发环境相关
+### 开发环境
 
 () 补充一篇mac下docker的操作手册，笔记上的整理过来。
 
 ### 未归类
+
+
 
 (201805) [《plantuml》](src/utils-plantuml.md)
 
