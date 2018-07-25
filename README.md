@@ -1,5 +1,13 @@
 # Index
 
+## Practice
+
+| 题目   | 分类   | 资源   |
+| ---- | ---- | ---- |
+| x    |      |      |
+| x    |      |      |
+| x    |      |      |
+
 ## Blogs
 
 ### Postgresql
