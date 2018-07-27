@@ -1,12 +1,6 @@
 # Index
 
-## Practice
 
-| 题目   | 分类   | 资源   |
-| ---- | ---- | ---- |
-| x    |      |      |
-| x    |      |      |
-| x    |      |      |
 
 ## Blogs
 
@@ -235,7 +229,31 @@ http://www.interdb.jp/pg/
 
 ---
 
+## Practice
 
+###01 德哥：第五重、场景把玩 (60天)
+
+> https://github.com/digoal/blog/blob/master/201804/20180425_01.md
+>
+> 第五重、场景把玩 (60天)
+>
+> 了解场景，以及数据库特性，加深对PG的了解。
+
+| TEST   | CAT  | SCRIPT                                   | STATUS |
+| ------ | ---- | ---------------------------------------- | ------ |
+| 点查     | SQL  | [scenario_test01.sh](sh/scenario_test01.sh) | done   |
+| 多表JOIN | SQL  | [scenario_test02.sh](sh/scenario_test02.sh) | done   |
+|        |      |                                          |        |
+
+### 02 xxx
+
+
+
+
+
+
+
+---
 
 ## Scripts & Extensions
 
