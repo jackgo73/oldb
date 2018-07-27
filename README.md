@@ -231,19 +231,19 @@ http://www.interdb.jp/pg/
 
 ## Practice
 
-###01 德哥：第五重、场景把玩 (60天)
+###01 德哥第五重场景把玩 (60天)
 
 > https://github.com/digoal/blog/blob/master/201804/20180425_01.md
 >
-> 第五重、场景把玩 (60天)
+> 第五重：场景把玩 (60天)：了解场景，以及数据库特性，加深对PG的了解。
 >
-> 了解场景，以及数据库特性，加深对PG的了解。
+> 机器配置：Intel(R) Core(TM) i5-4250U CPU @ 1.30GHz   SSD-120GB  Memory-8GB
 
-| TEST   | CAT  | SCRIPT                                   | STATUS |
-| ------ | ---- | ---------------------------------------- | ------ |
-| 点查     | SQL  | [scenario_test01.sh](sh/scenario_test01.sh) | done   |
-| 多表JOIN | SQL  | [scenario_test02.sh](sh/scenario_test02.sh) | done   |
-|        |      |                                          |        |
+| TEST   | CAT  | SCRIPT                                   | tps         | latencies(ms) |
+| ------ | ---- | ---------------------------------------- | ----------- | ------------- |
+| 点查     | SQL  | [scenario_test01.sh](sh/scenario_test01.sh) | 5849.152002 | 19.143        |
+| 多表JOIN | SQL  | [scenario_test02.sh](sh/scenario_test02.sh) | 599.122652  | 187.458       |
+|        |      |                                          |             |               |
 
 ### 02 xxx
 
