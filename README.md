@@ -231,7 +231,7 @@ http://www.interdb.jp/pg/
 
 ## Practice
 
-###01 德哥第五重场景把玩 (60天)
+### 01 德哥第五重场景把玩 (60天)
 
 > https://github.com/digoal/blog/blob/master/201804/20180425_01.md
 >
@@ -239,11 +239,11 @@ http://www.interdb.jp/pg/
 >
 > 机器配置：Intel(R) Core(TM) i5-4250U CPU @ 1.30GHz   SSD-120GB  Memory-8GB
 
-| TEST   | CAT  | SCRIPT                                   | tps         | latencies(ms) |
-| ------ | ---- | ---------------------------------------- | ----------- | ------------- |
-| 点查     | SQL  | [scenario_test01.sh](sh/scenario_test01.sh) | 5849.152002 | 19.143        |
-| 多表JOIN | SQL  | [scenario_test02.sh](sh/scenario_test02.sh) | 599.122652  | 187.458       |
-|        |      |                                          |             |               |
+| TEST       | CLASS | SCRIPT                                   | tps         | latencies(ms) |
+| ---------- | ----- | ---------------------------------------- | ----------- | ------------- |
+| 点查         | SQL   | [scenario_test01.sh](sh/scenario_test01.sh) | 5849.152002 | 19.143        |
+| 多表JOIN     | SQL   | [scenario_test02.sh](sh/scenario_test02.sh) | 599.122652  | 187.458       |
+| 大表JOIN统计查询 | SQL   |                                          |             |               |
 
 ### 02 xxx
 
@@ -317,6 +317,10 @@ x
 <summary>乱七八糟记录</summary>
 
 pg_man: select pg_man('max_connections')返回手册中这参数的介绍，自动识别版本。
+
+这个思路不错https://github.com/NikolayS/postgres_dba
+
+https://github.com/joyent/pgsqlstat
 
 </details>
 
