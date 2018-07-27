@@ -237,13 +237,17 @@ http://www.interdb.jp/pg/
 >
 > 第五重：场景把玩 (60天)：了解场景，以及数据库特性，加深对PG的了解。
 >
-> 机器配置：Intel(R) Core(TM) i5-4250U CPU @ 1.30GHz   SSD-120GB  Memory-8GB
+> 个人电脑，格式结果仅供参考
+>
+> 机器配置1：Centos7 Intel(R) Core(TM) i5-4250U CPU @ 1.30GHz   SSD-120GB  Memory-8GB
+>
+> 机器配置2:   Mac Intel Core i7 2.2 GHz SSD-250GB   Memory-16GB
 
-| TEST       | CLASS | SCRIPT                                   | tps         | latencies(ms) |
-| ---------- | ----- | ---------------------------------------- | ----------- | ------------- |
-| 点查         | SQL   | [scenario_test01.sh](sh/scenario_test01.sh) | 5849.152002 | 19.143        |
-| 多表JOIN     | SQL   | [scenario_test02.sh](sh/scenario_test02.sh) | 599.122652  | 187.458       |
-| 大表JOIN统计查询 | SQL   |                                          |             |               |
+| TEST             | CLASS | SCRIPT                                      | tps         | latencies(ms) |
+| ---------------- | ----- | ------------------------------------------- | ----------- | ------------- |
+| 点查             | SQL   | [scenario_test01.sh](sh/scenario_test01.sh) | 5849.152002 | 19.143        |
+| 多表JOIN         | SQL   | [scenario_test02.sh](sh/scenario_test02.sh) | 599.122652  | 187.458       |
+| 大表JOIN统计查询 | SQL   | [scenario_test03.sh](sh/scenario_test03.sh) |             |               |
 
 ### 02 xxx
 
