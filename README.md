@@ -52,8 +52,13 @@
 
 (201806 50%) [《构造postgresql测试数据库（填充一个数据库）》](src/pgsql-sql-testdatabase.md)
 
-
 ### Greenplum
+
+
+
+### BitTorrent
+
+(201808) [《BT Engine Research》](src/bt-research.md)
 
 
 
@@ -103,6 +108,12 @@ perf
 
 ## Database Paper
 
+后面在EXCEL上总结，md格式太不方便了。
+
+
+
+
+
 ### [1]概述
 
 DBSI
@@ -151,9 +162,27 @@ DBSI
 >
 >
 
+首先要看看IMS的文章，后面的很多理论在IMS中实现：
+
+
+
+1978年Gray实现了IMS系统作者Ron Obermarck、Homer Leonard提出的日志系统，这篇文章/书非常重要，事务处理书中的一些基础概念来自这篇文章，这篇文章对一些非正规、广为传播的知识作了汇总：
+
 (1) (下不到) Notes on data base operating systems
 
-(2) (201806) [6_Crash_recovery_in_a_distributed_data_storage_system.pdf](paper/6_Crash_recovery_in_a_distributed_data_storage_system.pdf)
+1985年Dieter Gawlick提出了成组提交的方案，并在IMS的Fastpath中实现了这一方案：
+
+(2) Varieties of Concurrency Control in IMS/VS FastPath
+
+1987年用于设置成组提交定时器的优化公示被提出：
+
+(3) Group Commit Timers and High Volume Transaction Systems
+
+
+
+
+
+(2)  [6_Crash_recovery_in_a_distributed_data_storage_system.pdf](paper/6_Crash_recovery_in_a_distributed_data_storage_system.pdf)
 
 (3) (下不到) System level concurrency control for distributed database systems
 
